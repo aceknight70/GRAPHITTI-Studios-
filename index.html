@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GRAPHITTI STUDIOS — Creative Entrepreneurship Incubator</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { gsGold: '#F5A623', gsBrown: '#8B5A19', gsRed: '#E53935', gsGreen: '#43A047', gsBlue: '#1E88E5', gsYellow: '#FDD835' },
+          fontFamily: { sans: ['Helvetica Neue', 'Arial', 'sans-serif'], display: ['Oswald', 'Impact', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    body { background-color: #FAFAFA; font-family: 'Helvetica Neue', Arial, sans-serif; overflow-x: hidden; }
+    h1, h2, h3, h4, h5, .wordmark { font-family: 'Oswald', Impact, sans-serif; letter-spacing: -0.02em; }
+    
+    .clip-diagonal { clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%); }
+    .room { display: none; }
+    .room.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+    
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    
+    @keyframes marquee {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(-100%, 0); }
+    }
+    .teleprompter-container {
+      width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .teleprompter-text {
+      display: inline-block;
+      padding-left: 100%;
+      animation: marquee 18s linear infinite;
+    }
+    
+    /* Fly-in animation for cards */
+    .fly-in {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+    .fly-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .btn-primary { @apply bg-gsGold text-white font-bold py-3 px-6 rounded shadow hover:bg-orange-500 transition-colors uppercase text-sm tracking-wider cursor-pointer text-center; }
+    .btn-secondary { @apply bg-white text-gsGold border-2 border-gsGold font-bold py-3 px-6 rounded shadow-sm hover:bg-orange-50 transition-colors uppercase text-sm tracking-wider cursor-pointer text-center; }
+    .input-field { @apply w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-gsGold focus:border-transparent bg-white shadow-sm; }
+    .card { @apply bg-white rounded-lg shadow border border-gray-100 p-6; }
+    .badge { @apply px-2 py-1 rounded text-xs font-bold uppercase; }
+  </style>
+</head>
+<body class="text-gray-800 min-h-screen flex flex-col relative">
+
+  <header class="bg-gsGold text-white pt-6 pb-20 px-4 md:px-8 shadow-md clip-diagonal relative w-full z-10 flex flex-col items-center text-center">
+    <div class="absolute top-4 right-4 md:right-8 flex gap-4">
+       <button id="nav-login-btn" class="text-white hover:text-orange-200 text-sm font-semibold uppercase tracking-widest transition">Login</button>
+       <button id="nav-logout-btn" class="hidden text-white hover:text-orange-200 text-sm font-semibold uppercase tracking-widest transition">Logout</button>
+    </div>
+    
+    <div class="flex flex-col items-center cursor-pointer mt-2 max-w-4xl" id="nav-home-btn">
+      <div class="mb-4">
+         <img src="/Screenshot_20260908_102638_WhatsApp.jpg" onerror="this.src='https://placehold.co/400x400/FDD835/000000?text=Graphitti+Studios'" alt="Graphitti Studios Logo" class="h-32 md:h-40 object-cover rounded-xl drop-shadow-md shadow-lg border-4 border-white" style="object-position: center; object-fit: cover; aspect-ratio: 1;">
+      </div>
+      <h1 class="wordmark text-4xl md:text-6xl uppercase tracking-tighter text-white mb-2 drop-shadow-sm">GRAPHITTI STUDIOS</h1>
+      <p class="text-lg md:text-xl text-orange-100 font-medium tracking-wide uppercase font-display">Creative Entrepreneurship Incubator</p>
+      <p class="text-sm md:text-base text-orange-200 font-medium tracking-wide mt-1">Where Creativity Meets Industry</p>
+    </div>
+  </header>
+
+  <div class="bg-gray-900 text-gsGold text-xs md:text-sm font-semibold tracking-widest text-center py-4 uppercase shadow-inner z-0 -mt-8 pt-10 pb-4">
+    8+ Years of Excellence · Tertiary Institutions · NYSC · SDG · Nollywood • Education and Creative industry
+  </div>
+  
+  <nav class="bg-white border-b shadow-sm sticky top-0 z-20">
+    <div class="max-w-5xl mx-auto px-4 flex justify-start md:justify-center gap-6 overflow-x-auto py-3 text-sm font-bold uppercase text-gray-600 scrollbar-hide">
+      <button onclick="showRoom('room-landing')" class="hover:text-gsGold whitespace-nowrap">Home</button>
+      <button onclick="showRoom('room-about')" class="hover:text-gsGold whitespace-nowrap">About</button>
+      <button onclick="showRoom('room-programs')" class="hover:text-gsGold whitespace-nowrap">Programs</button>
+      <button onclick="showRoom('room-gallery')" class="hover:text-gsGold whitespace-nowrap">Gallery</button>
+      <button onclick="showRoom('room-events')" class="hover:text-gsGold whitespace-nowrap">Events</button>
+      <button onclick="showRoom('room-apply-hub')" class="hover:text-gsGold whitespace-nowrap">Apply</button>
+      <button onclick="showRoom('room-marketplace')" class="hover:text-gsGold whitespace-nowrap">Marketplace</button>
+      <button onclick="showRoom('room-team')" class="hover:text-gsGold whitespace-nowrap">Partners</button>
+      <button onclick="showRoom('room-contact')" class="hover:text-gsGold whitespace-nowrap">Contact</button>
+    </div>
+  </nav>
+
+  <main class="flex-grow w-full max-w-5xl mx-auto px-4 md:px-8 py-10" id="main-content">
+    
+    <!-- ROOM: LANDING -->
+    <div id="room-landing" class="room active flex flex-col items-center justify-center space-y-8 py-12">
+      <div class="teleprompter-container w-full">
+        <h2 class="teleprompter-text text-5xl md:text-6xl font-display uppercase tracking-tight text-gsGold">
+          Empowering the Next Generation of Creative Entrepreneurs
+        </h2>
+      </div>
+      <p class="text-xl text-gray-600 text-center max-w-2xl">From school-packaged SDG'preneurship tracks to full commercial production depth, we provide the skills, platform, and marketplace to turn creativity into sustainable enterprise.</p>
+      <div class="flex gap-4 mt-8">
+         <button onclick="showRoom('room-apply-hub')" class="btn-primary text-lg px-8 py-4">Start Your Journey</button>
+         <button onclick="showRoom('room-programs')" class="btn-secondary text-lg px-8 py-4">View Programs</button>
+      </div>
+    </div>
+
+    <!-- ROOM: ABOUT US & LOCATION -->
+    <div id="room-about" class="room space-y-12">
+       <div class="text-center max-w-3xl mx-auto mt-8">
+         <h2 class="text-4xl font-display uppercase tracking-tight mb-4">About Us</h2>
+         <p class="text-gray-600 leading-relaxed text-lg">Graphitti Studios is a premier Creative Entrepreneurship Incubator. We bridge the gap between creative passion and market reality, equipping individuals and institutions with the production mechanics and business acumen required to thrive in the modern economy.</p>
+       </div>
+       <div class="card max-w-3xl mx-auto border-t-4 border-gsBrown bg-orange-50 text-center">
+         <h3 class="text-2xl font-display uppercase mb-4 text-gsBrown">Address & Location</h3>
+         <p class="font-bold text-lg mb-1">Graphitti Studios Headquarters</p>
+         <p class="text-gray-700">Blk 6 Iye Plaza, Refinery Road</p>
+         <p class="text-gray-700">Effurun, Delta State, Nigeria</p>
+         <div class="mt-4 flex flex-col items-center justify-center space-y-1 text-gray-700 font-medium">
+            <p>📞 (+234) 08030796898</p>
+            <p>✉️ barbara06sfx@gmail.com</p>
+         </div>
+         <div class="mt-6 w-full h-64 bg-gray-200 rounded overflow-hidden shadow-inner">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3971.05445214695!2d5.772590214765363!3d5.559288195968565!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1041ad7000000001%3A0x0!2sRefinery%20Rd%2C%20Effurun%2C%20Nigeria!5e0!3m2!1sen!2sng!4v1700000000000!5m2!1sen!2sng" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+         </div>
+       </div>
+    </div>
+
+    <!-- ROOM: PROGRAMS -->
+    <div id="room-programs" class="room space-y-12">
+      <div class="text-center max-w-3xl mx-auto mt-8 mb-4">
+        <h2 class="text-4xl font-display uppercase tracking-tight">Our Main Focus Training Programs</h2>
+        <p class="text-gray-600 leading-relaxed text-lg mt-4">Whether you're a school student building a startup, an adult looking for a freelance career, or a creative launching a commercial enterprise, we have a track for you.</p>
+      </div>
+
+      <!-- Entrepreneurship Models -->
+      <div>
+         <h3 class="text-2xl font-display uppercase tracking-tight mb-2 text-center text-gsGold">Entrepreneurship Tracks</h3>
+         <p class="text-center text-gray-500 mb-8 max-w-2xl mx-auto">The business models and mindsets we train our creatives to build.</p>
+         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto px-4">
+            <div class="card flex flex-col hover:shadow-lg transition-shadow border-t-4 border-gsGold">
+               <h4 class="font-display text-xl uppercase mb-2">Shadow SDG Entrepreneurship</h4>
+               <div class="flex gap-2 mb-3">
+                 <span class="badge bg-green-100 text-green-800">School-Packaged ✓</span>
+                 <span class="badge bg-blue-100 text-blue-800">Institute</span>
+               </div>
+               <p class="text-gray-600 text-sm mb-4 flex-grow">Building a business around a UN SDG (4, 8, 9, 12). Flagship skill: Resin Jewellery. 6-week structure ending in a Market Day.</p>
+               <button class="btn-primary w-full" onclick="showRoom('room-apply-hub')">Apply</button>
+            </div>
+            
+            <div class="card flex flex-col hover:shadow-lg transition-shadow border-t-4 border-gsRed">
+               <h4 class="font-display text-xl uppercase mb-2">Commercial Creative</h4>
+               <div class="flex gap-2 mb-3">
+                 <span class="badge bg-green-100 text-green-800">School-Packaged ✓</span>
+                 <span class="badge bg-blue-100 text-blue-800">Institute</span>
+               </div>
+               <p class="text-gray-600 text-sm mb-4 flex-grow">Market-driven art, fashion, graphic design sold purely to a willing market. Pure profit and production mechanics.</p>
+               <button class="btn-primary w-full bg-gsRed hover:bg-red-600" onclick="showRoom('room-apply-hub')">Apply</button>
+            </div>
+            
+            <div class="card flex flex-col hover:shadow-lg transition-shadow border-t-4 border-gsBlue">
+               <h4 class="font-display text-xl uppercase mb-2">Digital & Tech-Creative</h4>
+               <div class="flex gap-2 mb-3">
+                 <span class="badge bg-green-100 text-green-800">School-Packaged ✓</span>
+                 <span class="badge bg-blue-100 text-blue-800">Institute</span>
+               </div>
+               <p class="text-gray-600 text-sm mb-4 flex-grow">Content creation, digital marketing, digital assets. Minimal physical cost, max exposure.</p>
+               <button class="btn-primary w-full bg-gsBlue hover:bg-blue-600" onclick="showRoom('room-apply-hub')">Apply</button>
+            </div>
+            
+            <div class="card flex flex-col hover:shadow-lg transition-shadow border-t-4 border-gsBrown">
+               <h4 class="font-display text-xl uppercase mb-2">Cultural & Heritage</h4>
+               <div class="flex gap-2 mb-3">
+                 <span class="badge bg-green-100 text-green-800">School-Packaged ✓</span>
+                 <span class="badge bg-blue-100 text-blue-800">Institute</span>
+               </div>
+               <p class="text-gray-600 text-sm mb-4 flex-grow">Indigenous stories, traditional art, textiles, Nollywood-adjacent storytelling. Full production-house depth.</p>
+               <button class="btn-primary w-full bg-gsBrown hover:bg-orange-800" onclick="showRoom('room-apply-hub')">Apply</button>
+            </div>
+            
+            <div class="card flex flex-col hover:shadow-lg transition-shadow border-t-4 border-gsGreen">
+               <h4 class="font-display text-xl uppercase mb-2">Freelance / Portfolio</h4>
+               <div class="flex gap-2 mb-3">
+                 <span class="badge bg-purple-100 text-purple-800">Institute Only</span>
+               </div>
+               <p class="text-gray-600 text-sm mb-4 flex-grow">Gig-economy portfolio for cinematographers, MUAs, set designers. Master client management and contracts.</p>
+               <button class="btn-primary w-full bg-gsGreen hover:bg-green-600" onclick="showRoom('room-apply-hub')">Apply</button>
+            </div>
+         </div>
+      </div>
+
+      <!-- Training Programmes List -->
+      <div>
+         <h3 class="text-2xl font-display uppercase tracking-tight mb-6 text-center text-gsGold">Programmes</h3>
+         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-6xl mx-auto">
+            <div class="card bg-gray-50 border-l-4 border-gsGold text-center p-6 flex items-center justify-center">
+              <span class="font-bold text-gray-800">Culinary Arts & Food Production</span>
+            </div>
+            <div class="card bg-gray-50 border-l-4 border-gsBrown text-center p-6 flex items-center justify-center">
+              <span class="font-bold text-gray-800">Leather Works & Bag Making</span>
+            </div>
+            <div class="card bg-gray-50 border-l-4 border-gsBlue text-center p-6 flex items-center justify-center">
+              <span class="font-bold text-gray-800">Resin Jewellery Making</span>
+            </div>
+            <div class="card bg-gray-50 border-l-4 border-gsGreen text-center p-6 flex items-center justify-center">
+              <span class="font-bold text-gray-800">Arts & Crafts</span>
+            </div>
+            <div class="card bg-gray-50 border-l-4 border-purple-500 text-center p-6 flex items-center justify-center">
+              <span class="font-bold text-gray-800">Film, Theatre Arts & Animation</span>
+            </div>
+            <div class="card bg-gray-50 border-l-4 border-gsRed text-center p-6 flex items-center justify-center">
+              <span class="font-bold text-gray-800">Fashion Design & Garment Making</span>
+            </div>
+            <div class="card bg-gray-50 border-l-4 border-gray-800 text-center p-6 flex items-center justify-center md:col-span-2 lg:col-span-2">
+              <span class="font-bold text-gray-800">Digital Creation & Media Skills</span>
+            </div>
+         </div>
+      </div>
+
+      <!-- Delivery Paths -->
+      <div>
+         <h3 class="text-2xl font-display uppercase tracking-tight mb-6 text-center text-gray-600">Delivery Paths</h3>
+         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto" id="programmes-grid">
+           <!-- For Schools -->
+           <div class="card fly-in flex flex-col hover:shadow-lg transition-shadow border-t-4 border-gsBlue">
+              <h4 class="font-display text-xl uppercase mb-4">For Schools</h4>
+              <ul class="text-sm text-gray-600 space-y-3 mb-6 flex-grow">
+                 <li class="flex items-center"><span class="font-bold text-gsBlue mr-2 text-lg">✓</span>Programme Overview</li>
+                 <li class="flex items-center"><span class="font-bold text-gsBlue mr-2 text-lg">✓</span>Curriculum</li>
+                 <li class="flex items-center"><span class="font-bold text-gsBlue mr-2 text-lg">✓</span>Booklet System</li>
+                 <li class="flex items-center"><span class="font-bold text-gsBlue mr-2 text-lg">✓</span>Market Day</li>
+              </ul>
+              <button class="btn-secondary text-xs uppercase mb-3 flex items-center justify-center gap-2 border-gsBlue text-gsBlue w-full"><span class="text-lg">📄</span> Download Brochure</button>
+              <button class="btn-primary bg-gsBlue hover:bg-blue-600 w-full" onclick="showRoom('room-org-apply')">Apply (School)</button>
+           </div>
+
+           <!-- For Institute -->
+           <div class="card fly-in flex flex-col hover:shadow-lg transition-shadow border-t-4 border-gsBrown" style="transition-delay: 100ms;">
+              <h4 class="font-display text-xl uppercase mb-4">For Institute</h4>
+              <ul class="text-sm text-gray-600 space-y-3 mb-6 flex-grow">
+                 <li class="flex items-center"><span class="font-bold text-gsBrown mr-2 text-lg">✓</span>Programme Overview</li>
+                 <li class="flex items-center"><span class="font-bold text-gsBrown mr-2 text-lg">✓</span>Curriculum</li>
+                 <li class="flex items-center"><span class="font-bold text-gsBrown mr-2 text-lg">✓</span>Freelance / Portfolio</li>
+              </ul>
+              <button class="btn-secondary text-xs uppercase mb-3 flex items-center justify-center gap-2 border-gsBrown text-gsBrown w-full"><span class="text-lg">📄</span> Download Brochure</button>
+              <button class="btn-primary bg-gsBrown hover:bg-orange-800 w-full" onclick="showRoom('room-institute-apply')">Apply (Institute)</button>
+           </div>
+
+           <!-- For Holiday Bootcamp -->
+           <div class="card fly-in flex flex-col hover:shadow-lg transition-shadow border-t-4 border-gsGreen" style="transition-delay: 200ms;">
+              <h4 class="font-display text-xl uppercase mb-4">For Holiday Bootcamp</h4>
+              <ul class="text-sm text-gray-600 space-y-3 mb-6 flex-grow">
+                 <li class="flex items-center"><span class="font-bold text-gsGreen mr-2 text-lg">✓</span>Programme Overview</li>
+                 <li class="flex items-center"><span class="font-bold text-gsGreen mr-2 text-lg">✓</span>Curriculum</li>
+                 <li class="flex items-center"><span class="font-bold text-gsGreen mr-2 text-lg">✓</span>Card System</li>
+              </ul>
+              <button class="btn-secondary text-xs uppercase mb-3 flex items-center justify-center gap-2 border-gsGreen text-gsGreen w-full"><span class="text-lg">📄</span> Download Flyer</button>
+              <button class="btn-primary bg-gsGreen hover:bg-green-600 w-full" onclick="showRoom('room-bootcamp-apply')">Apply (Institute)</button>
+           </div>
+         </div>
+      </div>
+    </div>
+
+    <!-- ROOM: FEES / PAYMENTS -->
+    <div id="room-fees" class="room max-w-4xl mx-auto space-y-8 mt-8">
+       <h2 class="text-4xl font-display uppercase tracking-tight text-center mb-8">Fees & Payments</h2>
+       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="card border-t-4 border-gsGold">
+             <h3 class="font-bold text-xl uppercase mb-2">School-Packaged Programs</h3>
+             <p class="text-gray-600 text-sm mb-4">Paid directly to the participating school as part of term extensions or holiday bootcamps. Contact your school administrator for exact pricing.</p>
+          </div>
+          <div class="card border-t-4 border-gsBrown">
+             <h3 class="font-bold text-xl uppercase mb-2">Institute Programs</h3>
+             <p class="text-gray-600 text-sm mb-2">Mini (Short Course): ₦50,000</p>
+             <p class="text-gray-600 text-sm mb-4">Deep (Full Certification): ₦150,000</p>
+          </div>
+       </div>
+       <div class="card bg-green-50 border-l-4 border-green-600 text-center">
+          <h3 class="font-bold text-xl uppercase mb-2 text-green-800">Payment Instructions</h3>
+          <p class="text-sm text-gray-700 mb-2">Please make all direct transfers to our official corporate account:</p>
+          <div class="p-6 bg-white rounded border mt-3 font-mono text-lg inline-block text-left">
+             <p class="mb-1">Bank: <span class="font-bold text-gray-900">First Bank</span></p>
+             <p class="mb-1">Account Name: <span class="font-bold text-gray-900">Graphitti Studios</span></p>
+             <p>Account Number: <span class="font-bold text-gray-900">2046999667</span></p>
+          </div>
+          <p class="text-xs text-gray-500 mt-4 italic">After payment, upload your receipt during the application process or send via our official WhatsApp channel.</p>
+       </div>
+    </div>
+
+    <!-- ROOM: TEAM & PARTNERS -->
+    <div id="room-team" class="room space-y-12 mt-8">
+       <div class="text-center max-w-3xl mx-auto">
+         <h2 class="text-4xl font-display uppercase tracking-tight mb-2">Our Partners — Wall of Fame</h2>
+         <p class="text-gray-600">The prestigious institutions and organizations powering Graphitti Studios across Nigeria.</p>
+       </div>
+       
+       <div>
+         <h3 class="text-2xl font-display uppercase mb-6 text-center border-b pb-2 text-gsBlue">Tertiary Institutions</h3>
+         <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center opacity-80">
+            <div class="card flex flex-col items-center justify-center p-6 h-32 hover:shadow-lg transition hover:opacity-100 bg-gray-50 border-l-4 border-gsBlue">
+               <span class="text-3xl mb-2">🎓</span>
+               <span class="font-bold uppercase text-xs tracking-wider">University of Benin</span>
+            </div>
+            <div class="card flex flex-col items-center justify-center p-6 h-32 hover:shadow-lg transition hover:opacity-100 bg-gray-50 border-l-4 border-gsBlue">
+               <span class="text-3xl mb-2">🎓</span>
+               <span class="font-bold uppercase text-xs tracking-wider">Polytechnic Auchi</span>
+            </div>
+            <div class="card flex flex-col items-center justify-center p-6 h-32 hover:shadow-lg transition hover:opacity-100 bg-gray-50 border-l-4 border-gsBlue">
+               <span class="text-3xl mb-2">🏛️</span>
+               <span class="font-bold uppercase text-xs tracking-wider">College of Ed.</span>
+            </div>
+            <div class="card flex flex-col items-center justify-center p-6 h-32 hover:shadow-lg transition hover:opacity-100 bg-gray-50 border-l-4 border-gsBlue">
+               <span class="text-3xl mb-2">🏛️</span>
+               <span class="font-bold uppercase text-xs tracking-wider">Fed. University</span>
+            </div>
+         </div>
+       </div>
+
+       <div>
+         <h3 class="text-2xl font-display uppercase mb-6 text-center border-b pb-2 text-gsGold">NYSC & Government</h3>
+         <div class="grid grid-cols-2 md:grid-cols-3 gap-6 text-center opacity-80 max-w-4xl mx-auto">
+            <div class="card flex flex-col items-center justify-center p-6 h-32 hover:shadow-lg transition hover:opacity-100 bg-green-50 border-l-4 border-green-600">
+               <span class="text-3xl mb-2">🇳🇬</span>
+               <span class="font-bold uppercase text-xs tracking-wider">NYSC Nigeria</span>
+            </div>
+            <div class="card flex flex-col items-center justify-center p-6 h-32 hover:shadow-lg transition hover:opacity-100 bg-green-50 border-l-4 border-green-600">
+               <span class="text-3xl mb-2">🏢</span>
+               <span class="font-bold uppercase text-xs tracking-wider">Delta SDG Office</span>
+            </div>
+            <div class="card flex flex-col items-center justify-center p-6 h-32 hover:shadow-lg transition hover:opacity-100 bg-green-50 border-l-4 border-green-600">
+               <span class="text-3xl mb-2">🌍</span>
+               <span class="font-bold uppercase text-xs tracking-wider">Min. of Youth</span>
+            </div>
+         </div>
+       </div>
+
+       <div>
+         <h3 class="text-2xl font-display uppercase mb-6 text-center border-b pb-2 text-gsRed">Secondary Schools</h3>
+         <div class="grid grid-cols-2 md:grid-cols-3 gap-6 text-center opacity-80 max-w-4xl mx-auto">
+            <div class="card flex flex-col items-center justify-center p-6 h-32 hover:shadow-lg transition hover:opacity-100 bg-orange-50 border-l-4 border-gsRed">
+               <span class="text-3xl mb-2">🏫</span>
+               <span class="font-bold uppercase text-xs tracking-wider">Jasmine School</span>
+            </div>
+            <div class="card flex flex-col items-center justify-center p-6 h-32 hover:shadow-lg transition hover:opacity-100 bg-orange-50 border-l-4 border-gsRed">
+               <span class="text-3xl mb-2">🏫</span>
+               <span class="font-bold uppercase text-xs tracking-wider">Freedom Assembly</span>
+            </div>
+            <div class="card flex flex-col items-center justify-center p-6 h-32 hover:shadow-lg transition hover:opacity-100 bg-orange-50 border-l-4 border-gsRed">
+               <span class="text-3xl mb-2">🏫</span>
+               <span class="font-bold uppercase text-xs tracking-wider">Excel Academy</span>
+            </div>
+         </div>
+       </div>
+    </div>
+
+    <!-- ROOM: GALLERY -->
+    <div id="room-gallery" class="room space-y-8 mt-8">
+       <div class="text-center max-w-3xl mx-auto mb-8">
+         <h2 class="text-4xl font-display uppercase tracking-tight mb-2">Our Work — Gallery</h2>
+         <p class="text-gray-600">Explore the brilliant physical and digital products created by our students and trainees.</p>
+       </div>
+       <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div class="relative group cursor-pointer overflow-hidden rounded-lg shadow aspect-square">
+             <img src="https://placehold.co/400x400/1E293B/FFFFFF?text=Resin+Jewellery" alt="Resin" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+             <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <span class="text-white font-bold uppercase tracking-wider text-sm">Resin Jewellery</span>
+             </div>
+          </div>
+          <div class="relative group cursor-pointer overflow-hidden rounded-lg shadow aspect-square">
+             <img src="https://placehold.co/400x400/8B4513/FFFFFF?text=Leather+Works" alt="Leather" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+             <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <span class="text-white font-bold uppercase tracking-wider text-sm">Leather Works</span>
+             </div>
+          </div>
+          <div class="relative group cursor-pointer overflow-hidden rounded-lg shadow aspect-square">
+             <img src="https://placehold.co/400x400/C53030/FFFFFF?text=Fashion+Design" alt="Fashion" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+             <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <span class="text-white font-bold uppercase tracking-wider text-sm">Fashion Design</span>
+             </div>
+          </div>
+          <div class="relative group cursor-pointer overflow-hidden rounded-lg shadow aspect-square">
+             <img src="https://placehold.co/400x400/FDD835/000000?text=Culinary+Arts" alt="Culinary" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+             <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <span class="text-white font-bold uppercase tracking-wider text-sm">Culinary Arts</span>
+             </div>
+          </div>
+          <div class="relative group cursor-pointer overflow-hidden rounded-lg shadow aspect-square">
+             <img src="https://placehold.co/400x400/2B6CB0/FFFFFF?text=Film+Production" alt="Film" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+             <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <span class="text-white font-bold uppercase tracking-wider text-sm">Film Production</span>
+             </div>
+          </div>
+          <div class="relative group cursor-pointer overflow-hidden rounded-lg shadow aspect-square">
+             <img src="https://placehold.co/400x400/38A169/FFFFFF?text=Arts+%26+Crafts" alt="Crafts" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+             <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <span class="text-white font-bold uppercase tracking-wider text-sm">Arts & Crafts</span>
+             </div>
+          </div>
+       </div>
+    </div>
+
+    <!-- ROOM: EVENTS & CALENDAR -->
+    <div id="room-events" class="room space-y-8 mt-8">
+       <div class="text-center max-w-3xl mx-auto mb-8">
+         <h2 class="text-4xl font-display uppercase tracking-tight mb-2">Events & Calendar</h2>
+         <p class="text-gray-600">Upcoming cohorts, registration deadlines, and public market days.</p>
+       </div>
+       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          <div class="card border-l-4 border-gsGold hover:shadow-lg transition">
+             <h3 class="font-bold uppercase text-lg mb-4 flex items-center"><span class="text-2xl mr-2">🗓️</span> Shadow SDG Cohort 1</h3>
+             <ul class="space-y-2 text-sm text-gray-700 mb-6">
+                <li><span class="font-bold">📍 Location:</span> Jasmine School, Warri</li>
+                <li><span class="font-bold">📅 Start Date:</span> 15th September, 2026</li>
+                <li><span class="font-bold">📅 Market Day:</span> 25th October, 2026</li>
+                <li><span class="font-bold text-red-600">⏳ Deadline:</span> 10th September</li>
+             </ul>
+             <button class="btn-primary w-full bg-gsGold" onclick="showRoom('room-apply-hub')">Apply Now</button>
+          </div>
+          
+          <div class="card border-l-4 border-gsBrown hover:shadow-lg transition">
+             <h3 class="font-bold uppercase text-lg mb-1 flex items-center"><span class="text-2xl mr-2">🗓️</span> ESP Creative Skill Hub</h3>
+             <p class="text-xs font-bold text-gsBrown uppercase mb-4 ml-8">For Recent Grads & Adults (No dulling!)</p>
+             <ul class="space-y-2 text-sm text-gray-700 mb-6">
+                <li><span class="font-bold">📍 Location:</span> Graphitti Studios HQ</li>
+                <li><span class="font-bold">📅 Start Date:</span> 10th September, 2026</li>
+                <li><span class="font-bold">📅 End Date:</span> 9th November, 2026</li>
+             </ul>
+             <button class="btn-primary w-full bg-gsBrown hover:bg-orange-800" onclick="showRoom('room-apply-hub')">Apply Now</button>
+          </div>
+
+          <div class="card border-l-4 border-gsGreen hover:shadow-lg transition">
+             <h3 class="font-bold uppercase text-lg mb-4 flex items-center"><span class="text-2xl mr-2">🗓️</span> Holiday Bootcamp</h3>
+             <ul class="space-y-2 text-sm text-gray-700 mb-6">
+                <li><span class="font-bold">📍 Location:</span> Graphitti Studios SMART ICT, IYE Plaza Refinery Road Effurun</li>
+                <li><span class="font-bold">📅 Start Date:</span> 20th April, 2027</li>
+                <li><span class="font-bold">📅 End Date:</span> 3rd May, 2027</li>
+                <li><span class="font-bold text-red-600">⏳ Deadline:</span> 15th April</li>
+             </ul>
+             <button class="btn-primary w-full bg-gsGreen hover:bg-green-600" onclick="showRoom('room-apply-hub')">Apply Now</button>
+          </div>
+       </div>
+    </div>
+
+    <!-- ROOM: CONTACT US -->
+    <div id="room-contact" class="room space-y-8 mt-8">
+       <div class="text-center max-w-3xl mx-auto mb-8">
+         <h2 class="text-4xl font-display uppercase tracking-tight mb-2">Contact Us</h2>
+         <p class="text-gray-600">Get in touch for partnerships, inquiries, and application support.</p>
+       </div>
+       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          <!-- Left: Contact Form -->
+          <div class="card border-t-4 border-gsBrown shadow-lg">
+             <h3 class="font-bold uppercase mb-4 text-gsBrown">Send us a message</h3>
+             <form class="space-y-4">
+                <div>
+                   <label class="block text-sm font-bold mb-1">Name</label>
+                   <input type="text" class="input-field" placeholder="Your Name">
+                </div>
+                <div>
+                   <label class="block text-sm font-bold mb-1">Email</label>
+                   <input type="email" class="input-field" placeholder="your@email.com">
+                </div>
+                <div>
+                   <label class="block text-sm font-bold mb-1">Message</label>
+                   <textarea class="input-field h-32" placeholder="How can we help?"></textarea>
+                </div>
+                <button type="button" class="btn-primary w-full bg-gray-800 hover:bg-black">Send Message</button>
+             </form>
+             <div class="mt-6 text-center">
+                <button class="w-full py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded shadow flex items-center justify-center gap-2 transition">
+                   <span class="text-xl">💬</span> Chat on WhatsApp
+                </button>
+             </div>
+          </div>
+          <!-- Right: FAQ -->
+          <div class="space-y-6">
+             <h3 class="font-bold uppercase mb-2 text-2xl text-gray-800 border-b pb-2">Frequently Asked Questions</h3>
+             <div class="space-y-4">
+                <div class="bg-gray-50 p-4 rounded border border-gray-100">
+                   <h4 class="font-bold text-gray-800 mb-1 text-sm">Q: What is the duration of the programme?</h4>
+                   <p class="text-sm text-gray-600">A: The Shadow SDG Entrepreneurship programme is 6 weeks, with a Market Day in Week 5.</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded border border-gray-100">
+                   <h4 class="font-bold text-gray-800 mb-1 text-sm">Q: Which schools do you partner with?</h4>
+                   <p class="text-sm text-gray-600">A: We partner with schools across Nigeria, including Jasmine School, Freedom Assembly, and Excel Academy.</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded border border-gray-100">
+                   <h4 class="font-bold text-gray-800 mb-1 text-sm">Q: What is the cost?</h4>
+                   <p class="text-sm text-gray-600">A: Programme fee is ₦10,000 per student, plus materials cost of ₦25,000.</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded border border-gray-100">
+                   <h4 class="font-bold text-gray-800 mb-1 text-sm">Q: What is SDG Entrepreneurship?</h4>
+                   <p class="text-sm text-gray-600">A: Building a business that serves a UN Sustainable Development Goal.</p>
+                </div>
+             </div>
+          </div>
+       </div>
+    </div>
+
+    <!-- ROOM: ALUMNI NETWORK -->
+    <div id="room-alumni" class="room space-y-8 mt-8">
+       <div class="text-center max-w-3xl mx-auto">
+         <h2 class="text-4xl font-display uppercase tracking-tight mb-2">Alumni Network</h2>
+         <p class="text-gray-600">Celebrating the creatives who have launched successful enterprises through Graphitti.</p>
+       </div>
+       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="card border-t-4 border-gsGold">
+             <h4 class="font-bold uppercase text-lg mb-1">Resin Arts Enterprise</h4>
+             <p class="text-xs text-gsGold font-bold mb-2">Shadow SDG Cohort</p>
+             <p class="text-sm text-gray-600 italic">"Graphitti gave me the platform to turn my passion for jewelry into a profitable business that tackles recycling."</p>
+          </div>
+          <div class="card border-t-4 border-gsBlue">
+             <h4 class="font-bold uppercase text-lg mb-1">TechTribe Media</h4>
+             <p class="text-xs text-gsBlue font-bold mb-2">Digital & Tech Track</p>
+             <p class="text-sm text-gray-600 italic">"From a trainee to running my own independent digital agency managing major clients in Lagos."</p>
+          </div>
+          <div class="card border-t-4 border-gsBrown">
+             <h4 class="font-bold uppercase text-lg mb-1">Heritage Threads</h4>
+             <p class="text-xs text-gsBrown font-bold mb-2">Cultural & Heritage</p>
+             <p class="text-sm text-gray-600 italic">"Our textile designs are now featured in three Nollywood productions thanks to the Institute's network."</p>
+          </div>
+       </div>
+    </div>
+
+    <!-- ROOM: CHANNELS -->
+    <div id="room-channels" class="room max-w-2xl mx-auto space-y-6 mt-8">
+       <div class="text-center mb-6">
+         <h2 class="text-4xl font-display uppercase tracking-tight mb-2">Our Channels</h2>
+         <p class="text-gray-600">Join the community and stay updated with Graphitti Studios.</p>
+       </div>
+       <div class="card flex items-center justify-between hover:shadow-lg transition">
+          <div class="flex items-center gap-4">
+             <div class="w-12 h-12 bg-green-500 rounded flex items-center justify-center text-white text-2xl">💬</div>
+             <div>
+                <h3 class="font-bold text-lg uppercase">WhatsApp Community</h3>
+                <p class="text-sm text-gray-500">Join our vibrant creative discussions.</p>
+             </div>
+          </div>
+          <button class="btn-primary bg-green-500 hover:bg-green-600 text-xs">Join Now</button>
+       </div>
+       <div class="card flex items-center justify-between hover:shadow-lg transition">
+          <div class="flex items-center gap-4">
+             <div class="w-12 h-12 bg-pink-500 rounded flex items-center justify-center text-white text-2xl">📸</div>
+             <div>
+                <h3 class="font-bold text-lg uppercase">Instagram</h3>
+                <p class="text-sm text-gray-500">See behind-the-scenes production.</p>
+             </div>
+          </div>
+          <button class="btn-primary bg-pink-500 hover:bg-pink-600 text-xs">Follow Us</button>
+       </div>
+       <div class="card flex items-center justify-between hover:shadow-lg transition">
+          <div class="flex items-center gap-4">
+             <div class="w-12 h-12 bg-blue-600 rounded flex items-center justify-center text-white text-2xl">📘</div>
+             <div>
+                <h3 class="font-bold text-lg uppercase">Facebook Page</h3>
+                <p class="text-sm text-gray-500">Updates, events, and market days.</p>
+             </div>
+          </div>
+          <button class="btn-primary bg-blue-600 hover:bg-blue-700 text-xs">Like Page</button>
+       </div>
+    </div>
+
+    <!-- ROOM: APPLY HUB -->
+    <div id="room-apply-hub" class="room max-w-4xl mx-auto mt-8">
+       <div class="text-center mb-8">
+         <h2 class="text-4xl font-display uppercase tracking-tight">Apply to Graphitti Studios</h2>
+         <p class="text-gray-600 mt-2">Select the path that describes you.</p>
+       </div>
+       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Card 1 -->
+          <div class="card border-t-4 border-gsBrown hover:shadow-lg cursor-pointer transition flex flex-col" onclick="showRoom('room-institute-apply')">
+             <h3 class="font-bold text-xl uppercase mb-2">Individual / Institute</h3>
+             <p class="text-sm text-gray-600 mb-4 flex-grow">For Undergraduate, Recent Graduates , adults and independent creatives applying directly to Graphitti Institute.</p>
+             <button class="btn-primary bg-gsBrown hover:bg-orange-800 w-full text-xs">Apply Here</button>
+          </div>
+          <!-- Card 2 -->
+          <div class="card border-t-4 border-gsBlue hover:shadow-lg cursor-pointer transition flex flex-col" onclick="showRoom('room-org-apply')">
+             <h3 class="font-bold text-xl uppercase mb-2">School / Organization</h3>
+             <p class="text-sm text-gray-600 mb-4 flex-grow">Bring Graphitti into your institution, company, or NGO.</p>
+             <button class="btn-primary bg-gsBlue hover:bg-blue-600 w-full text-xs">Partner With Us</button>
+          </div>
+          <!-- Card 3 -->
+          <div class="card border-t-4 border-gsGreen hover:shadow-lg cursor-pointer transition flex flex-col" onclick="showRoom('room-bootcamp-apply')">
+             <h3 class="font-bold text-xl uppercase mb-2">Holiday Bootcamp</h3>
+             <p class="text-sm text-gray-600 mb-4 flex-grow">For children participating in school holiday programs or after school extensive training</p>
+             <button class="btn-primary bg-gsGreen hover:bg-green-600 w-full text-xs">Register Child here</button>
+          </div>
+       </div>
+    </div>
+
+    <!-- ROOM: ORGANIZATION APPLY -->
+    <div id="room-org-apply" class="room max-w-xl mx-auto mt-8">
+       <button onclick="showRoom('room-apply-hub')" class="text-gsBlue font-bold text-sm uppercase mb-4 hover:underline">← Back to Apply Hub</button>
+       <div class="card border-t-4 border-gsBlue">
+          <h2 class="text-2xl font-display uppercase mb-2">Organization Application</h2>
+          <p class="text-sm text-gray-500 mb-6">Partner with us to run Graphitti programs at your location.</p>
+          <form id="org-apply-form" class="space-y-4">
+             <div>
+                <label class="block text-sm font-bold mb-1">Organization Type</label>
+                <select name="org_type" id="org_type_select" class="input-field" onchange="document.getElementById('org-booklet-type').textContent = this.value.toUpperCase()">
+                   <option value="school">School</option>
+                   <option value="company">Company</option>
+                   <option value="ngo">NGO</option>
+                   <option value="other">Other</option>
+                </select>
+             </div>
+             <div class="flex items-center gap-4 mb-4">
+                <label class="flex items-center gap-1 text-sm font-bold cursor-pointer"><input type="radio" name="status" value="new" checked class="accent-gsBlue w-4 h-4"> New Partnership</label>
+                <label class="flex items-center gap-1 text-sm font-bold cursor-pointer"><input type="radio" name="status" value="registered" class="accent-gsBlue w-4 h-4"> Already Registered</label>
+             </div>
+             <div><label class="block text-sm font-bold mb-1">Organization Name</label><input required name="org_name" class="input-field"></div>
+             <div><label class="block text-sm font-bold mb-1">Contact Person</label><input required name="contact_name" class="input-field"></div>
+             <div><label class="block text-sm font-bold mb-1">Email</label><input type="email" required name="email" class="input-field"></div>
+             <div><label class="block text-sm font-bold mb-1">Phone</label><input required name="phone" class="input-field"></div>
+             
+             <div id="org-booklet-dl" class="hidden bg-blue-50 border border-blue-200 p-4 rounded text-center">
+                <p class="text-blue-800 font-bold mb-2">Application Received!</p>
+                <button type="button" class="btn-primary bg-gsBlue w-full text-xs">Download <span id="org-booklet-type">SCHOOL</span> Information Booklet (PDF)</button>
+             </div>
+
+             <button type="submit" class="btn-primary w-full bg-gsBlue hover:bg-blue-600" id="org-apply-submit-btn">Submit Request</button>
+          </form>
+       </div>
+    </div>
+
+    <!-- ROOM: BOOTCAMP APPLY -->
+    <div id="room-bootcamp-apply" class="room max-w-xl mx-auto mt-8">
+       <button onclick="showRoom('room-apply-hub')" class="text-gsGreen font-bold text-sm uppercase mb-4 hover:underline">← Back to Apply Hub</button>
+       <div class="card border-t-4 border-gsGreen">
+          <h2 class="text-2xl font-display uppercase mb-2">Holiday Bootcamp Registration</h2>
+          <p class="text-sm text-gray-500 mb-6">Register a child for our intensive holiday creative camps.</p>
+          <form id="bootcamp-apply-form" class="space-y-4">
+             <div><label class="block text-sm font-bold mb-1">Child's Full Name</label><input required name="child_name" class="input-field"></div>
+             <div><label class="block text-sm font-bold mb-1">Child's Age</label><input type="number" required name="child_age" class="input-field"></div>
+             <div><label class="block text-sm font-bold mb-1">Parent / Guardian Phone</label><input required name="parent_phone" class="input-field"></div>
+             <div><label class="block text-sm font-bold mb-1">Host Organization / Location</label><input name="host_org" class="input-field" placeholder="Leave blank for independent bootcamp"></div>
+             <div id="bootcamp-apply-msg" class="hidden font-bold p-3 rounded text-sm text-center"></div>
+             <button type="submit" class="btn-primary w-full bg-gsGreen hover:bg-green-600" id="bootcamp-apply-submit-btn">Register for Bootcamp</button>
+          </form>
+       </div>
+    </div>
+
+    <!-- ROOM: APPLY (School) -->
+    <div id="room-apply" class="room max-w-xl mx-auto">
+      <div class="card border-t-4 border-gsGold">
+        <h2 class="text-2xl font-display uppercase mb-2">School Application Form</h2>
+        <p class="text-sm text-gray-500 mb-6">Start your journey in one of our school-packaged programmes.</p>
+        <form id="apply-form" class="space-y-4">
+          <div><label class="block text-sm font-bold mb-1">Full Name</label><input required name="full_name" class="input-field" placeholder="John Doe"></div>
+          <div><label class="block text-sm font-bold mb-1">School / Institution</label><input required name="school_name_text" class="input-field" placeholder="E.g. Graphitti Demonstration Academy"></div>
+          <div>
+            <label class="block text-sm font-bold mb-1">Class / Tier</label>
+            <select required name="tier" class="input-field">
+              <option value="primary">Primary School</option>
+              <option value="jss">Junior Secondary (JSS)</option>
+              <option value="ss">Senior Secondary (SS)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-bold mb-1">Programme Type</label>
+            <select required name="programme_type" class="input-field">
+              <option value="shadow_sdg">Shadow SDG Entrepreneurship</option>
+              <option value="commercial_creative">Commercial Creative Entrepreneurship</option>
+              <option value="digital_tech">Digital & Tech-Creative Entrepreneurship</option>
+            </select>
+          </div>
+          <div><label class="block text-sm font-bold mb-1">Parent/Guardian Phone</label><input required name="parent_phone" class="input-field" placeholder="080..."></div>
+          <div><label class="block text-sm font-bold mb-1">Why do you want to join?</label><textarea name="why_join" class="input-field h-24" placeholder="Tell us your motivation..."></textarea></div>
+          <div id="apply-msg" class="hidden font-bold p-3 rounded text-sm text-center"></div>
+          <button type="submit" class="btn-primary w-full" id="apply-submit-btn">Submit Application</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ROOM: INSTITUTE APPLY -->
+    <div id="room-institute-apply" class="room max-w-xl mx-auto">
+      <div class="card border-t-4 border-gsBrown">
+        <h2 class="text-2xl font-display uppercase mb-2">Institute Application</h2>
+        <p class="text-sm text-gray-500 mb-6">Open to adults and independent creatives.</p>
+        <form id="inst-apply-form" class="space-y-4">
+          <div><label class="block text-sm font-bold mb-1">Full Name</label><input required name="full_name" class="input-field" placeholder="John Doe"></div>
+          <div><label class="block text-sm font-bold mb-1">Phone Number</label><input required name="phone" class="input-field" placeholder="080..."></div>
+          <div>
+            <label class="block text-sm font-bold mb-1">Programme Type</label>
+            <select required name="programme_type" class="input-field">
+              <option value="shadow_sdg">Shadow SDG Entrepreneurship</option>
+              <option value="commercial_creative">Commercial Creative Entrepreneurship</option>
+              <option value="digital_tech">Digital & Tech-Creative Entrepreneurship</option>
+              <option value="cultural_heritage">Cultural & Heritage Entrepreneurship</option>
+              <option value="freelance_portfolio">Freelance / Portfolio Entrepreneurship</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-bold mb-1">Depth</label>
+            <select required name="depth" class="input-field">
+              <option value="mini">Mini (Short Course)</option>
+              <option value="deep">Deep (Full Certification)</option>
+            </select>
+          </div>
+          <div class="flex items-center gap-2 p-3 bg-gray-50 border rounded">
+             <input type="checkbox" name="wants_trainer_track" id="inst-trainer" class="w-5 h-5 accent-gsGold">
+             <label for="inst-trainer" class="text-sm font-bold">Include Trainer Track Certification</label>
+          </div>
+          <div><label class="block text-sm font-bold mb-1">Why do you want to join?</label><textarea name="why_join" class="input-field h-24" placeholder="Tell us your motivation..."></textarea></div>
+          <div id="inst-apply-msg" class="hidden font-bold p-3 rounded text-sm text-center"></div>
+          <button type="submit" class="btn-secondary w-full border-gsBrown text-gsBrown hover:bg-orange-50" id="inst-apply-submit-btn">Submit Application</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ROOM: LOGIN -->
+    <div id="room-login" class="room max-w-md mx-auto">
+      <div class="card border-t-4 border-gray-800">
+        <h2 class="text-2xl font-display uppercase mb-6 text-center">Portal Login</h2>
+        <form id="login-form" class="space-y-4">
+          <div>
+            <label class="block text-sm font-bold mb-1">I am a...</label>
+            <select id="login-role" class="input-field">
+              <option value="student">School Student</option>
+              <option value="parent">Parent / Guardian</option>
+              <option value="trainee">Institute Trainee</option>
+              <option value="teacher">School Teacher / Mentor</option>
+              <option value="staff">Graphitti Staff (Operations)</option>
+              <option value="manager">Graphitti Manager (Curriculum)</option>
+              <option value="admin">Graphitti Master (Overview)</option>
+            </select>
+          </div>
+          <div id="login-phone-div">
+            <label class="block text-sm font-bold mb-1" id="login-phone-label">Registered Phone</label>
+            <input type="text" id="login-phone" class="input-field" placeholder="080...">
+          </div>
+          <div>
+            <label class="block text-sm font-bold mb-1">Secret PIN</label>
+            <input type="password" id="login-pin" class="input-field" placeholder="****" required>
+          </div>
+          <div id="login-error" class="text-red-500 text-sm hidden font-semibold"></div>
+          <button type="submit" class="btn-primary w-full bg-gray-800 hover:bg-black" id="login-submit-btn">Enter Portal</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ROOM: STUDENT HUBLET (School) -->
+    <div id="room-student" class="room space-y-8">
+      <div class="bg-white p-6 rounded-lg shadow-sm border border-gsGold border-t-4">
+        <h2 id="stu-welcome" class="text-2xl font-display uppercase">Welcome!</h2>
+        <p id="stu-badge" class="text-gray-600 mt-1 font-medium"></p>
+        <div class="mt-2 text-xs font-bold text-gsGold uppercase tracking-wide" id="stu-delivery-mode">Delivery Mode: Term Extension</div>
+        <div class="mt-4 bg-gray-200 rounded-full h-3">
+           <div id="stu-progress" class="bg-gsGold h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+      </div>
+      
+      <div id="stu-alerts-container" class="space-y-2 hidden">
+         <h3 class="text-xs uppercase font-bold text-gray-500 tracking-wider">Programme Announcements</h3>
+         <div id="stu-alerts" class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded shadow-sm text-sm text-blue-900 space-y-2"></div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+         <!-- Left Column: The Stages -->
+         <div class="space-y-3">
+            <h3 class="font-display uppercase text-xl mb-4 text-gray-400 border-b pb-2">Your Journey</h3>
+            <div id="wk1" class="p-4 border rounded bg-white shadow-sm flex items-center justify-between"><span class="font-bold">Knowledge</span><span class="badge bg-gray-200">Pending</span></div>
+            <div id="wk3" class="p-4 border rounded bg-white shadow-sm flex items-center justify-between"><span class="font-bold">Production</span><span class="badge bg-gray-200">Pending</span></div>
+            <div id="wk4" class="p-4 border rounded bg-white shadow-sm flex items-center justify-between"><span class="font-bold">Market Prep</span><span class="badge bg-gray-200">Pending</span></div>
+            <div id="wk5" class="p-4 border rounded bg-white shadow-sm flex items-center justify-between"><span class="font-bold">Market Day</span><span class="badge bg-gray-200">Pending</span></div>
+            <div id="wk6" class="p-4 border rounded bg-white shadow-sm flex items-center justify-between"><span class="font-bold">Refined Plan</span><span class="badge bg-gray-200">Pending</span></div>
+         </div>
+         <!-- Right Column: Forms -->
+         <div class="md:col-span-2 space-y-6">
+            <h3 class="font-display uppercase text-xl mb-4 text-gray-400 border-b pb-2">My Journal</h3>
+            
+            <form id="form-guess-plan" class="card space-y-3">
+               <h4 class="font-bold text-lg">Guess Business Plan</h4>
+               <p class="text-sm text-gray-500">Before production, what is your business idea?</p>
+               <textarea name="content" class="input-field h-24" required></textarea>
+               <button type="submit" class="btn-primary w-full text-xs py-2">Submit Plan</button>
+            </form>
+            
+            <form id="form-prod-log" class="card space-y-3">
+               <h4 class="font-bold text-lg">Production Log</h4>
+               <div class="grid grid-cols-2 gap-3">
+                  <div><label class="text-xs font-bold block mb-1">Item Made</label><input name="item_made" class="input-field py-2" required></div>
+                  <div><label class="text-xs font-bold block mb-1">Materials Cost (₦)</label><input type="number" name="materials_cost" class="input-field py-2" required></div>
+               </div>
+               <div><label class="text-xs font-bold block mb-1">Residue/Waste Management Plan</label><textarea name="residue_plan" class="input-field h-16" required></textarea></div>
+               <button type="submit" class="btn-primary w-full text-xs py-2">Log Production</button>
+            </form>
+            
+            <form id="form-market-log" class="card space-y-3">
+               <h4 class="font-bold text-lg">Market Day Experience</h4>
+               <div class="grid grid-cols-2 gap-3">
+                  <div><label class="text-xs font-bold block mb-1">Price Set (₦)</label><input type="number" name="price_set" class="input-field py-2" required></div>
+                  <div><label class="text-xs font-bold block mb-1">Sale Amount (₦)</label><input type="number" name="sale_amount" class="input-field py-2" value="0"></div>
+               </div>
+               <div><label class="text-xs font-bold block mb-1">Buyer Feedback</label><textarea name="buyer_interest_notes" class="input-field h-16" required></textarea></div>
+               <div class="flex items-center gap-2"><input type="checkbox" name="sold" id="market-sold"><label for="market-sold" class="text-sm font-bold">Item Sold Successfully</label></div>
+               <button type="submit" class="btn-primary w-full text-xs py-2">Log Market Day</button>
+            </form>
+            
+            <form id="form-market-list" class="card space-y-3 border-green-500 border-l-4">
+               <h4 class="font-bold text-lg">List on Marketplace</h4>
+               <p class="text-sm text-gray-500">Sell your item globally on the Graphitti Marketplace.</p>
+               <div><label class="text-xs font-bold block mb-1">Listing Title</label><input name="title" class="input-field py-2" required></div>
+               <div><label class="text-xs font-bold block mb-1">Description / Maker's Story</label><textarea name="description" class="input-field h-16" required></textarea></div>
+               <div class="grid grid-cols-2 gap-3">
+                  <div><label class="text-xs font-bold block mb-1">Skill Area</label><input name="skill_area" class="input-field py-2" required></div>
+                  <div><label class="text-xs font-bold block mb-1">Price (₦)</label><input type="number" name="price" class="input-field py-2" required></div>
+               </div>
+               <button type="submit" class="btn-primary w-full bg-green-600 hover:bg-green-700 text-xs py-2">Publish Listing</button>
+            </form>
+
+            <div id="stu-certificate" class="hidden card bg-gradient-to-br from-gsGold to-orange-400 text-white text-center py-10 space-y-4 shadow-xl border-0">
+               <div class="text-5xl mb-2">🎓</div>
+               <h3 class="font-display text-3xl uppercase tracking-widest">Certificate of Completion</h3>
+               <p class="text-lg">This certifies that</p>
+               <h4 id="cert-name" class="font-display text-4xl uppercase pb-2 border-b-2 border-white/50 inline-block px-8"></h4>
+               <p class="text-lg pb-4">has successfully completed the Programme.</p>
+               <p id="cert-badge" class="font-bold uppercase tracking-widest text-sm opacity-90"></p>
+            </div>
+         </div>
+      </div>
+    </div>
+
+    <!-- ROOM: TRAINEE DASHBOARD (Institute) -->
+    <div id="room-trainee" class="room space-y-8">
+       <div class="bg-white p-6 rounded-lg shadow-sm border border-gsBrown border-t-4">
+         <h2 id="trainee-welcome" class="text-2xl font-display uppercase">Welcome Trainee!</h2>
+         <p id="trainee-prog" class="text-gray-600 mt-1 font-medium"></p>
+         <div class="mt-4 space-y-4">
+             <div>
+                <p class="text-xs font-bold uppercase text-gray-500 mb-1">Core Programme Progress</p>
+                <div class="bg-gray-200 rounded-full h-2">
+                   <div id="trainee-prog-bar" class="bg-gsBrown h-2 rounded-full" style="width: 0%"></div>
+                </div>
+             </div>
+             <div id="trainee-trainer-track-div" class="hidden">
+                <p class="text-xs font-bold uppercase text-gray-500 mb-1">Trainer Track Certification</p>
+                <div class="bg-gray-200 rounded-full h-2">
+                   <div id="trainee-trainer-bar" class="bg-gsGold h-2 rounded-full" style="width: 0%"></div>
+                </div>
+             </div>
+         </div>
+       </div>
+
+       <!-- Trainer Path Selection -->
+       <div id="trainee-path-selection" class="card border-gsGold border-2 hidden bg-yellow-50">
+          <h3 class="font-display text-xl uppercase mb-2">Trainer Certification Complete!</h3>
+          <p class="text-sm mb-4">Choose your path forward as a certified Graphitti Trainer.</p>
+          <div class="space-y-3">
+             <button onclick="selectTrainerPath('skill_only')" class="btn-secondary w-full text-left flex justify-between items-center"><span class="font-bold">1. Skill Only</span><span class="text-xs font-normal">Certified, no teaching</span></button>
+             <button onclick="selectTrainerPath('school_assigned')" class="btn-secondary w-full text-left flex justify-between items-center"><span class="font-bold">2. School-Assigned Trainer</span><span class="text-xs font-normal">Teach in a partner school</span></button>
+             <button onclick="selectTrainerPath('independent_enterprise')" class="btn-primary w-full text-left flex justify-between items-center"><span class="font-bold">3. Independent Training Enterprise</span><span class="text-xs font-normal">Start your own business</span></button>
+          </div>
+       </div>
+
+       <!-- Independent Enterprise Form -->
+       <form id="form-create-enterprise" class="card border-gsGreen border-t-4 hidden">
+          <h3 class="font-display text-xl uppercase mb-2">Setup Training Enterprise</h3>
+          <p class="text-sm text-gray-500 mb-4">You'll be listed in the Marketplace Directory.</p>
+          <div class="space-y-4">
+             <div><label class="block text-sm font-bold mb-1">Enterprise Name</label><input required name="enterprise_name" class="input-field" placeholder="E.g. JD Digital Academy"></div>
+             <div><label class="block text-sm font-bold mb-1">Skill Areas Taught</label><input required name="skill_areas" class="input-field" placeholder="E.g. Videography, Editing"></div>
+             <div><label class="block text-sm font-bold mb-1">Contact Phone</label><input required name="contact_phone" class="input-field"></div>
+             <div><label class="block text-sm font-bold mb-1">Description / Pitch</label><textarea required name="description" class="input-field h-20" placeholder="Why should clients hire you?"></textarea></div>
+             <button type="submit" class="btn-primary bg-gsGreen hover:bg-green-600 w-full">Launch Enterprise</button>
+          </div>
+       </form>
+       
+       <form id="form-trainee-market-list" class="card space-y-3 border-green-500 border-l-4">
+          <h4 class="font-bold text-lg">List Product on Marketplace</h4>
+          <p class="text-sm text-gray-500">Sell your creations globally.</p>
+          <div><label class="text-xs font-bold block mb-1">Listing Title</label><input name="title" class="input-field py-2" required></div>
+          <div><label class="text-xs font-bold block mb-1">Description / Maker's Story</label><textarea name="description" class="input-field h-16" required></textarea></div>
+          <div class="grid grid-cols-2 gap-3">
+             <div><label class="text-xs font-bold block mb-1">Skill Area</label><input name="skill_area" class="input-field py-2" required></div>
+             <div><label class="text-xs font-bold block mb-1">Price (₦)</label><input type="number" name="price" class="input-field py-2" required></div>
+          </div>
+          <button type="submit" class="btn-primary w-full bg-green-600 hover:bg-green-700 text-xs py-2">Publish Listing</button>
+       </form>
+    </div>
+
+    <!-- ROOM: TEACHER PORTAL -->
+    <div id="room-teacher" class="room space-y-8">
+       <div class="flex justify-between items-end border-b pb-4">
+          <div>
+             <h2 class="text-3xl font-display uppercase">Teacher Portal</h2>
+             <p id="teacher-subtitle" class="text-gray-500 font-medium"></p>
+          </div>
+       </div>
+       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="card text-center"><p class="text-sm text-gray-500 uppercase font-bold">Total Students</p><p id="t-stat-students" class="text-4xl font-display mt-2">-</p></div>
+          <div class="card text-center"><p class="text-sm text-gray-500 uppercase font-bold">Cohorts Active</p><p id="t-stat-cohorts" class="text-4xl font-display mt-2">-</p></div>
+          <div class="card text-center"><p class="text-sm text-gray-500 uppercase font-bold">Action Needed</p><p id="t-stat-alerts" class="text-4xl font-display text-red-500 mt-2">-</p></div>
+       </div>
+       <div id="t-alerts-box" class="bg-red-50 border-l-4 border-red-500 p-4 rounded text-red-900 hidden space-y-2">
+          <h4 class="font-bold uppercase tracking-wider text-xs">Alerts</h4>
+          <div id="t-alerts-list" class="text-sm space-y-1"></div>
+       </div>
+       <div class="card overflow-hidden p-0">
+          <div class="p-4 border-b bg-gray-50"><h3 class="font-bold uppercase">Student Management</h3></div>
+          <div class="overflow-x-auto">
+             <table class="w-full text-left text-sm">
+                <thead class="bg-gray-100 text-gray-600 uppercase text-xs">
+                   <tr><th class="p-3">Name</th><th class="p-3">Tier</th><th class="p-3">Guess Plan</th><th class="p-3">Prod. Log</th><th class="p-3">Market Log</th></tr>
+                </thead>
+                <tbody id="t-students-table" class="divide-y divide-gray-100"></tbody>
+             </table>
+          </div>
+       </div>
+    </div>
+
+    <!-- ROOM: PARENT VIEW -->
+    <div id="room-parent" class="room space-y-8">
+       <div class="card bg-orange-50 border-l-4 border-gsGold">
+          <h2 class="text-2xl font-display uppercase">Parent Dashboard</h2>
+          <p id="parent-subtitle" class="text-sm text-gray-600 mt-1"></p>
+       </div>
+       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-4">
+             <h3 class="font-display text-xl uppercase border-b pb-2">Parent Tasks</h3>
+             <div id="parent-tasks" class="card space-y-3"></div>
+          </div>
+          <div class="space-y-4">
+             <h3 class="font-display text-xl uppercase border-b pb-2">Child's Journal View</h3>
+             <div id="parent-journal" class="space-y-4"></div>
+          </div>
+       </div>
+    </div>
+
+    <!-- ROOM: ADMIN DASHBOARD -->
+    <div id="room-admin" class="room space-y-8">
+       <div class="flex justify-between items-end border-b pb-4">
+          <div>
+             <h2 class="text-3xl font-display uppercase">Master Admin Dashboard</h2>
+             <p id="admin-subtitle" class="text-gray-500 font-medium"></p>
+          </div>
+       </div>
+       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="card text-center"><p class="text-sm text-gray-500 uppercase font-bold">Total Schools</p><p id="a-stat-schools" class="text-4xl font-display mt-2">-</p></div>
+          <div class="card text-center"><p class="text-sm text-gray-500 uppercase font-bold">Total Students</p><p id="a-stat-students" class="text-4xl font-display mt-2">-</p></div>
+          <div class="card text-center"><p class="text-sm text-gray-500 uppercase font-bold">Market Revenue</p><p id="a-stat-rev" class="text-4xl font-display text-green-600 mt-2">-</p></div>
+       </div>
+       <div class="card overflow-hidden p-0">
+          <div class="p-4 border-b bg-gray-50"><h3 class="font-bold uppercase">Cross-School Hublet Overview</h3></div>
+          <div class="overflow-x-auto">
+             <table class="w-full text-left text-sm">
+                <thead class="bg-gray-100 text-gray-600 uppercase text-xs">
+                   <tr><th class="p-3">School Name</th><th class="p-3">Programme</th><th class="p-3">Mode</th><th class="p-3">Enrolled</th><th class="p-3">Revenue (₦)</th></tr>
+                </thead>
+                <tbody id="a-overview-table" class="divide-y divide-gray-100"></tbody>
+             </table>
+          </div>
+       </div>
+    </div>
+
+    <!-- ROOM: ADMIN - STAFF DASHBOARD -->
+    <div id="room-admin-staff" class="room space-y-8">
+       <div class="flex justify-between items-end border-b pb-4">
+          <div>
+             <h2 class="text-3xl font-display uppercase">Staff Operations Dashboard</h2>
+             <p class="text-gray-500 font-medium">Day-to-day operations and approvals</p>
+          </div>
+       </div>
+       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="card">
+             <h3 class="font-bold uppercase mb-4 border-b pb-2 text-gsBlue">Pending Applications</h3>
+             <ul class="space-y-3 text-sm text-gray-600">
+                <li class="p-3 border rounded flex justify-between items-center hover:bg-gray-50">
+                   <div><p class="font-bold text-gray-800">John Doe</p><p class="text-xs">Cultural & Heritage</p></div>
+                   <button class="badge bg-blue-100 text-blue-800 border border-blue-200 hover:bg-blue-200">Review</button>
+                </li>
+                <li class="p-3 border rounded flex justify-between items-center hover:bg-gray-50">
+                   <div><p class="font-bold text-gray-800">Lagos Creative High</p><p class="text-xs">Shadow SDG School</p></div>
+                   <button class="badge bg-blue-100 text-blue-800 border border-blue-200 hover:bg-blue-200">Review</button>
+                </li>
+             </ul>
+          </div>
+          <div class="card">
+             <h3 class="font-bold uppercase mb-4 border-b pb-2 text-gsGold">Marketplace Approvals</h3>
+             <ul class="space-y-3 text-sm text-gray-600">
+                <li class="p-3 border rounded flex justify-between items-center hover:bg-gray-50">
+                   <div><p class="font-bold text-gray-800">Resin Earring Batch</p><p class="text-xs">by Alice S.</p></div>
+                   <button class="badge bg-green-100 text-green-800 border border-green-200 hover:bg-green-200">Approve</button>
+                </li>
+                <li class="p-3 border rounded flex justify-between items-center hover:bg-gray-50">
+                   <div><p class="font-bold text-gray-800">Videography Hourly</p><p class="text-xs">by Mark T.</p></div>
+                   <button class="badge bg-green-100 text-green-800 border border-green-200 hover:bg-green-200">Approve</button>
+                </li>
+             </ul>
+          </div>
+       </div>
+    </div>
+
+    <!-- ROOM: ADMIN - MANAGER DASHBOARD -->
+    <div id="room-admin-manager" class="room space-y-8">
+       <div class="flex justify-between items-end border-b pb-4">
+          <div>
+             <h2 class="text-3xl font-display uppercase">Curriculum Manager</h2>
+             <p class="text-gray-500 font-medium">Programme content and structure editing</p>
+          </div>
+       </div>
+       <div class="card bg-gray-50 border-l-4 border-gsBrown">
+           <h3 class="font-bold uppercase mb-4 text-gsBrown">Programme Editor</h3>
+           <select class="input-field mb-6 font-bold">
+              <option>Shadow SDG Entrepreneurship</option>
+              <option>Commercial Creative</option>
+              <option>Digital & Tech-Creative</option>
+              <option>Cultural & Heritage</option>
+              <option>Freelance / Portfolio</option>
+           </select>
+           
+           <div class="space-y-6">
+              <div>
+                 <h4 class="font-bold text-sm text-gray-800 uppercase mb-2">Knowledge & Prep Module</h4>
+                 <textarea class="input-field h-24" placeholder="Enter curriculum topics, theory, and foundational concepts..."></textarea>
+              </div>
+              <div>
+                 <h4 class="font-bold text-sm text-gray-800 uppercase mb-2">Production Module</h4>
+                 <textarea class="input-field h-24" placeholder="Enter practical steps, tool usage, and physical creation process..."></textarea>
+              </div>
+              <div>
+                 <h4 class="font-bold text-sm text-gray-800 uppercase mb-2">Market Exposure Module</h4>
+                 <textarea class="input-field h-24" placeholder="Enter packaging, pricing, pitching, and sales strategy..."></textarea>
+              </div>
+              <button class="btn-primary w-full text-xs uppercase bg-gsBrown hover:bg-orange-800">Save Curriculum Updates</button>
+           </div>
+       </div>
+    </div>
+
+    <!-- ROOM: MARKETPLACE -->
+    <div id="room-marketplace" class="room space-y-8">
+       <div class="text-center space-y-4">
+          <h2 class="text-4xl font-display uppercase tracking-tight">Graphitti Marketplace</h2>
+          <p class="text-gray-600">Discover products and training services from our creatives.</p>
+       </div>
+       
+       <div class="flex border-b border-gray-200">
+          <button id="tab-products" class="px-4 py-2 font-bold uppercase text-sm border-b-2 border-gsGold text-gsGold" onclick="toggleMarketTab('products')">Products</button>
+          <button id="tab-services" class="px-4 py-2 font-bold uppercase text-sm border-b-2 border-transparent text-gray-500" onclick="toggleMarketTab('services')">Training Services</button>
+       </div>
+
+       <div id="market-products-view">
+          <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4" id="marketplace-grid">
+             <!-- Injected listings -->
+             <p class="text-gray-500 col-span-full">Loading products...</p>
+          </div>
+       </div>
+
+       <div id="market-services-view" class="hidden">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="services-grid">
+             <!-- Injected services -->
+             <p class="text-gray-500 col-span-full">Loading training enterprises...</p>
+          </div>
+       </div>
+    </div>
+
+    <!-- ROOM: LISTING DETAIL (Product or Service) -->
+    <div id="room-listing-detail" class="room max-w-2xl mx-auto">
+       <button onclick="showRoom('room-marketplace')" class="text-gsGold font-bold text-sm uppercase mb-4 hover:underline">← Back to Market</button>
+       <div class="card" id="listing-detail-card">
+          <!-- Injected via JS -->
+       </div>
+       <form id="form-buy" class="card mt-4 border-t-4 border-gsGold hidden">
+          <h3 class="font-bold text-lg mb-2">Complete Purchase / Inquiry</h3>
+          <input type="hidden" id="buy-listing-id" name="listing_id">
+          <input type="hidden" id="buy-type" name="buy_type"> <!-- 'product' or 'service' -->
+          <div class="space-y-3">
+             <div><label class="text-xs font-bold block mb-1">Your Name</label><input required name="buyer_name_text" class="input-field"></div>
+             <div><label class="text-xs font-bold block mb-1">Your Phone</label><input required name="buyer_phone_text" class="input-field"></div>
+             <button type="submit" class="btn-primary w-full">Confirm Order</button>
+          </div>
+          <div id="buy-msg" class="hidden font-bold p-3 rounded text-sm text-center mt-3"></div>
+       </form>
+    </div>
+
+    <!-- ROOM: CONNECTOR SIGNUP -->
+    <div id="room-connector-signup" class="room max-w-xl mx-auto">
+       <div class="card border-t-4 border-gsBlue">
+          <h2 class="text-2xl font-display uppercase mb-2">Become a Connector</h2>
+          <p class="text-sm text-gray-500 mb-6">Earn permanent credit for referring buyers to products or clients to training enterprises.</p>
+          <form id="form-connector" class="space-y-4">
+             <div><label class="block text-sm font-bold mb-1">Full Name</label><input required name="full_name" class="input-field"></div>
+             <div><label class="block text-sm font-bold mb-1">Phone</label><input required name="phone" class="input-field"></div>
+             <div><label class="block text-sm font-bold mb-1">Email</label><input type="email" name="email" class="input-field"></div>
+             <div id="connector-msg" class="hidden font-bold p-3 rounded text-sm text-center"></div>
+             <button type="submit" class="btn-primary w-full bg-gsBlue hover:bg-blue-600">Get My Referral Code</button>
+          </form>
+       </div>
+       
+       <div id="connector-dashboard" class="card mt-6 border-t-4 border-green-500 hidden">
+          <h2 class="text-2xl font-display uppercase mb-4 text-green-700">Connector Dashboard</h2>
+          <div class="p-4 bg-gray-50 border rounded text-center mb-6">
+             <p class="text-sm font-bold uppercase text-gray-500 mb-2">Your Referral Code</p>
+             <p class="text-3xl font-mono text-gray-800 tracking-widest" id="conn-code"></p>
+             <p class="text-xs text-gray-500 mt-2">Append ?ref=CODE to any marketplace link.</p>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+             <div class="text-center p-3 border rounded"><p class="text-xs font-bold uppercase text-gray-500">Credited Sales</p><p class="text-2xl font-display" id="conn-sales">-</p></div>
+             <div class="text-center p-3 border rounded"><p class="text-xs font-bold uppercase text-gray-500">Credited Leads</p><p class="text-2xl font-display" id="conn-leads">-</p></div>
+          </div>
+       </div>
+    </div>
+
+  </main>
+  
+  <footer class="bg-gray-900 text-white py-12 text-center mt-12">
+     <div class="max-w-5xl mx-auto px-4">
+        <h2 class="font-display text-2xl uppercase mb-2 tracking-widest text-gsGold">Graphitti Studios</h2>
+        <p class="text-sm text-gray-400">Creative Entrepreneurship Incubator © 2026</p>
+     </div>
+  </footer>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

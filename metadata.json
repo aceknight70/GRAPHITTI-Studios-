@@ -1,0 +1,6 @@
+{
+  "name": "Graphitti Studios",
+  "description": "Where Creativity Meets Industry - Skill acquisition and Shadow SDG Entrepreneurship hublet backed by Supabase.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

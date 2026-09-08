@@ -1,0 +1,6 @@
+-- 1. NON-DESTRUCTIVE MIGRATION FOR EXISTING TABLES
+ALTER TABLE public.gs_periods ADD COLUMN IF NOT EXISTS programme_type text not null default 'shadow_sdg';
+ALTER TABLE public.gs_periods ADD COLUMN IF NOT EXISTS delivery_mode text not null default 'term_extension';
+
+-- 2. CREATE NEW TABLES FOR CREATIVE ENTREPRENEURSHIP & MARKETPLACE
+-- (The rest of the user's script here...)
