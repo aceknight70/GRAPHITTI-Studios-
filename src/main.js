@@ -720,6 +720,9 @@ async function loadAboutContent() {
       data.forEach(item => {
         if (item.section_key && item.content_text) {
           aboutContentMap[item.section_key] = item.content_text;
+          if (item.section_key === 'logo_url') {
+            applyLogoToHeader(item.content_text);
+          }
         }
       });
     } else {
@@ -2083,47 +2086,144 @@ window.saveHowSection = async function(sectionKey) {
 loadHowItWorksContent();
 
 // ==========================================
-// STUDIO LOGO MANAGEMENT (Master Admin & Manager)
+// STUDIO LOGO MANAGEMENT (Master Admin, Manager & Staff)
 // ==========================================
+
+function canEditLogo() {
+  if (!currentUser) return false;
+  const r = currentUser.role || currentUser.data?.role;
+  return r === 'master' || r === 'admin' || r === 'manager' || r === 'staff' ||
+         currentUser.data?.is_master === true || currentUser.data?.is_manager === true;
+}
+
+function compressAndResizeImage(file, maxWidth = 512, maxHeight = 512, quality = 0.85) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onerror = reject;
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+        if (width > height) {
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+        resolve(dataUrl);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function applyLogoToHeader(src) {
+  if (!src) return;
+  const logoImg = $('main-header-logo');
+  if (logoImg) logoImg.src = src;
+  const previewImg = $('logo-modal-preview');
+  if (previewImg) previewImg.src = src;
+}
 
 function updateLogoVisibility() {
   const btn = $('btn-change-logo');
   if (btn) {
-    if (isMasterOrManager()) {
-      btn.classList.remove('hidden');
+    if (canEditLogo()) {
+      btn.title = "Update Studio Logo (Authorized operational access)";
     } else {
-      btn.classList.add('hidden');
+      btn.title = "Update Studio Logo (Staff PIN: 5555 · Manager: 4321 · Master: 1234)";
     }
   }
 }
 
-function loadCustomLogo() {
+async function loadCustomLogo() {
+  // 1. Check local storage
   const savedLogo = localStorage.getItem('gs_custom_logo');
   if (savedLogo) {
-    const logoImg = $('main-header-logo');
-    if (logoImg) logoImg.src = savedLogo;
-    const previewImg = $('logo-modal-preview');
-    if (previewImg) previewImg.src = savedLogo;
+    applyLogoToHeader(savedLogo);
   }
+
+  // 2. Fetch from Supabase gs_about_content
+  try {
+    const { data, error } = await supabase
+      .from('gs_about_content')
+      .select('content_text')
+      .eq('section_key', 'logo_url')
+      .single();
+    if (!error && data && data.content_text) {
+      applyLogoToHeader(data.content_text);
+      try {
+        localStorage.setItem('gs_custom_logo', data.content_text);
+      } catch (e) {}
+    }
+  } catch (err) {}
 }
 
 window.openLogoModal = function() {
-  if (!isMasterOrManager()) {
-    showAboutToast('Only Master Admin and Manager can change the studio logo.', false);
-    return;
-  }
   const modal = $('modal-change-logo');
+  if (!modal) return;
+
   const currentLogo = $('main-header-logo')?.src || '/Screenshot_20260908_102638_WhatsApp.jpg';
   const preview = $('logo-modal-preview');
   if (preview) preview.src = currentLogo;
+
   const err = $('logo-modal-error');
   if (err) err.classList.add('hidden');
+
+  const compressStatus = $('logo-compress-status');
+  if (compressStatus) compressStatus.classList.add('hidden');
+
   const fileInput = $('logo-file-input');
   if (fileInput) fileInput.value = '';
+
   const urlInput = $('logo-url-input');
   if (urlInput) urlInput.value = '';
+
   stagedLogoDataUrl = '';
-  if (modal) modal.classList.remove('hidden');
+
+  // Auth Status Banner
+  const statusEl = $('logo-auth-status');
+  if (statusEl) {
+    if (canEditLogo()) {
+      let roleLabel = 'Staff Member';
+      if (currentUser.role === 'admin' || currentUser.role === 'master' || currentUser.data?.is_master) roleLabel = 'Master Admin (App Owner & Fortune)';
+      else if (currentUser.role === 'manager' || currentUser.data?.is_manager) roleLabel = 'Manager (Barbara Abieyuwa Omoregie)';
+      else if (currentUser.role === 'staff') roleLabel = 'Operational Staff';
+
+      statusEl.className = "text-xs p-2.5 rounded mb-3 flex items-center justify-between bg-green-50 text-green-800 border border-green-200 font-medium";
+      statusEl.innerHTML = `
+        <span class="flex items-center gap-1.5"><span>✓</span> <span>Logged in as <b>${roleLabel}</b>. Permission granted.</span></span>
+        <span class="text-[10px] bg-green-200 text-green-900 px-2 py-0.5 rounded uppercase font-bold">Authorized</span>
+      `;
+    } else {
+      statusEl.className = "text-xs p-2.5 rounded mb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-amber-50 text-amber-900 border border-amber-200 font-medium";
+      statusEl.innerHTML = `
+        <div class="flex items-center gap-1.5">
+          <span>⚠️</span>
+          <span>Viewing as visitor. Log in with Staff (5555), Manager (4321), or Master (1234) PIN to save changes.</span>
+        </div>
+        <button type="button" onclick="window.closeLogoModal(); window.openLoginModal();" class="text-xs font-bold uppercase bg-amber-200 hover:bg-amber-300 text-amber-900 px-2.5 py-1 rounded shadow-sm whitespace-nowrap self-start sm:self-auto">
+          Login Now
+        </button>
+      `;
+    }
+  }
+
+  modal.classList.remove('hidden');
 };
 
 window.closeLogoModal = function() {
@@ -2131,26 +2231,79 @@ window.closeLogoModal = function() {
   if (modal) modal.classList.add('hidden');
 };
 
+window.setLogoPreset = function(presetUrl) {
+  stagedLogoDataUrl = presetUrl;
+  const urlInput = $('logo-url-input');
+  if (urlInput) urlInput.value = presetUrl;
+  const preview = $('logo-modal-preview');
+  if (preview) preview.src = presetUrl;
+  const compressStatus = $('logo-compress-status');
+  if (compressStatus) {
+    compressStatus.textContent = '✓ Preset Selected';
+    compressStatus.className = 'text-[10px] font-bold text-green-700';
+    compressStatus.classList.remove('hidden');
+  }
+};
+
 window.resetDefaultLogo = async function() {
   const defaultSrc = '/Screenshot_20260908_102638_WhatsApp.jpg';
-  localStorage.removeItem('gs_custom_logo');
-  const logoImg = $('main-header-logo');
-  if (logoImg) logoImg.src = defaultSrc;
+  try {
+    localStorage.removeItem('gs_custom_logo');
+  } catch (e) {}
+  applyLogoToHeader(defaultSrc);
+
+  // Sync reset to Supabase if logged in
+  if (canEditLogo()) {
+    try {
+      const adminId = (currentUser?.data?.id && typeof currentUser.data.id === 'string' && currentUser.data.id.length >= 32) ? currentUser.data.id : null;
+      await supabase.from('gs_about_content').upsert({
+        section_key: 'logo_url',
+        content_text: defaultSrc,
+        updated_at: new Date().toISOString(),
+        updated_by: adminId
+      }, { onConflict: 'section_key' });
+    } catch (err) {}
+  }
+
   window.closeLogoModal();
-  showAboutToast('Logo reset to default.');
+  showAboutToast('Logo reset to default WhatsApp photo.');
 };
 
 let stagedLogoDataUrl = '';
 const logoFileInput = $('logo-file-input');
 if (logoFileInput) {
-  logoFileInput.addEventListener('change', (e) => {
+  logoFileInput.addEventListener('change', async (e) => {
     const file = e.target.files?.[0];
-    if (file) {
+    if (!file) return;
+
+    const compressStatus = $('logo-compress-status');
+    const preview = $('logo-modal-preview');
+    if (compressStatus) {
+      compressStatus.textContent = '⏳ Optimizing image...';
+      compressStatus.className = 'text-[10px] font-bold text-amber-700';
+      compressStatus.classList.remove('hidden');
+    }
+
+    try {
+      // Compress and resize image to 512x512 max (~40KB JPEG)
+      const compressedDataUrl = await compressAndResizeImage(file, 512, 512, 0.85);
+      stagedLogoDataUrl = compressedDataUrl;
+      if (preview) preview.src = stagedLogoDataUrl;
+      if (compressStatus) {
+        const kbSize = Math.round((compressedDataUrl.length * 3 / 4) / 1024);
+        compressStatus.textContent = `✓ Auto-Optimized (${kbSize} KB)`;
+        compressStatus.className = 'text-[10px] font-bold text-green-700';
+      }
+    } catch (err) {
+      console.warn('Canvas compression fallback:', err);
       const reader = new FileReader();
       reader.onload = (event) => {
         stagedLogoDataUrl = event.target.result;
-        const preview = $('logo-modal-preview');
         if (preview) preview.src = stagedLogoDataUrl;
+        if (compressStatus) {
+          compressStatus.textContent = '✓ Image Loaded';
+          compressStatus.className = 'text-[10px] font-bold text-green-700';
+        }
       };
       reader.readAsDataURL(file);
     }
@@ -2172,43 +2325,150 @@ const logoForm = $('logo-upload-form');
 if (logoForm) {
   logoForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    if (!isMasterOrManager()) {
-      showAboutToast('Unauthorized to modify logo.', false);
+    const saveBtn = $('btn-save-logo');
+    const err = $('logo-modal-error');
+    if (err) err.classList.add('hidden');
+
+    if (!canEditLogo()) {
+      if (err) {
+        err.innerHTML = 'You must be logged in as <b>Staff (PIN: 5555)</b>, <b>Manager (PIN: 4321)</b>, or <b>Master Admin (PIN: 1234)</b> to save. <a href="javascript:void(0)" onclick="window.closeLogoModal(); window.openLoginModal();" class="underline ml-1 font-bold">Login here</a>';
+        err.classList.remove('hidden');
+      }
+      showAboutToast('Please log in with Staff, Manager, or Master Admin PIN to save.', false);
       return;
     }
+
     const urlVal = logoUrlInput ? logoUrlInput.value.trim() : '';
     const chosenSrc = stagedLogoDataUrl || urlVal;
 
     if (!chosenSrc) {
-      const err = $('logo-modal-error');
       if (err) {
-        err.textContent = 'Please choose an image file or enter an image URL.';
+        err.textContent = 'Please choose an image file, select a preset, or enter an image URL.';
         err.classList.remove('hidden');
       }
       return;
     }
 
-    localStorage.setItem('gs_custom_logo', chosenSrc);
-    const logoImg = $('main-header-logo');
-    if (logoImg) logoImg.src = chosenSrc;
+    if (saveBtn) {
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving Logo...';
+    }
 
-    // Optional sync to Supabase gs_about_content
+    let savedLocally = false;
+    try {
+      localStorage.setItem('gs_custom_logo', chosenSrc);
+      savedLocally = true;
+    } catch (storageErr) {
+      console.warn('localStorage quota warning:', storageErr);
+    }
+
+    applyLogoToHeader(chosenSrc);
+
+    // Sync to Supabase gs_about_content
+    let syncedCloud = false;
     try {
       const adminId = (currentUser?.data?.id && typeof currentUser.data.id === 'string' && currentUser.data.id.length >= 32) ? currentUser.data.id : null;
-      await supabase.from('gs_about_content').upsert({
+      const { error } = await supabase.from('gs_about_content').upsert({
         section_key: 'logo_url',
         content_text: chosenSrc,
         updated_at: new Date().toISOString(),
         updated_by: adminId
       }, { onConflict: 'section_key' });
-    } catch (err) {}
+      if (!error) syncedCloud = true;
+    } catch (cloudErr) {
+      console.warn('Supabase logo save notice:', cloudErr);
+    }
+
+    if (saveBtn) {
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'Save Logo';
+    }
 
     window.closeLogoModal();
-    showAboutToast('Studio logo updated successfully!');
+    showAboutToast(syncedCloud ? '✓ Studio logo saved and synced to database!' : (savedLocally ? '✓ Studio logo updated and saved in browser!' : '✓ Studio logo updated!'));
   });
 }
 
-// Initial boot load for Logo
+// ==========================================
+// MANAGER CURRICULUM EDITOR
+// ==========================================
+const curriculumData = {
+  'Shadow SDG Entrepreneurship': {
+    knowledge: 'SDG-aligned creative design, environmental sustainability, ethical materials sourcing, community needs assessment, and entrepreneurship foundations.',
+    production: 'Clean resin casting, zero-residue leather craft, pattern drafting, eco-packaging fabrication, and studio safety standards.',
+    market: 'Local exhibitions, school enterprise showcase, buyer feedback collection, wholesale pricing formulas, and cooperative credit preparation.'
+  },
+  'Commercial Creative': {
+    knowledge: 'Mass-market creative demand, brand identity, luxury leather crafting principles, and studio economics.',
+    production: 'Batch bag production, precision stitching, high-finish hardware installation, and quality control grading.',
+    market: 'B2B boutique supply, corporate gifting catalogues, permanent Graphitti marketplace placement, and wholesale distributor relations.'
+  },
+  'Digital & Tech-Creative': {
+    knowledge: 'Digital workflow, generative AI tools, prompt architecture, digital asset protection, and UI/UX design basics.',
+    production: 'Media asset rendering, motion graphics, audio mastering, video editing sprints, and cloud project handoff.',
+    market: 'Remote creative gigs, digital product kits, freelance agency pitching, and international client billing.'
+  },
+  'Cultural & Heritage': {
+    knowledge: 'Edo bronze casting history, traditional textile dyeing, African storytelling archetypes, and cultural preservation.',
+    production: 'Authentic craft reproduction, natural pigments, heritage wood carving, and beadwork craftsmanship.',
+    market: 'Cultural festivals, heritage museum gift shops, Nollywood props licensing, and diaspora collector marketing.'
+  },
+  'Freelance / Portfolio': {
+    knowledge: 'Client contracts, proposal engineering, freelance rate calculation, intellectual property, and personal branding.',
+    production: 'Signature portfolio development, pitch deck creation, showreel assembly, and case study documentation.',
+    market: 'Direct client acquisition, creative agency representation, retainer contracts, and Graphitti Connector referrals.'
+  }
+};
+
+window.loadManagerCurriculum = function() {
+  const select = $('mgr-prog-select');
+  if (!select) return;
+  const prog = select.value;
+  
+  const saved = localStorage.getItem('gs_curr_' + prog);
+  let data = curriculumData[prog];
+  if (saved) {
+    try { data = JSON.parse(saved); } catch(e) {}
+  }
+
+  if ($('mgr-curr-knowledge')) $('mgr-curr-knowledge').value = data?.knowledge || '';
+  if ($('mgr-curr-production')) $('mgr-curr-production').value = data?.production || '';
+  if ($('mgr-curr-market')) $('mgr-curr-market').value = data?.market || '';
+};
+
+const currForm = $('form-mgr-curriculum');
+if (currForm) {
+  currForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const select = $('mgr-prog-select');
+    const prog = select ? select.value : 'Shadow SDG Entrepreneurship';
+    const knowledge = $('mgr-curr-knowledge')?.value.trim() || '';
+    const production = $('mgr-curr-production')?.value.trim() || '';
+    const market = $('mgr-curr-market')?.value.trim() || '';
+
+    const payload = { knowledge, production, market };
+    curriculumData[prog] = payload;
+    try {
+      localStorage.setItem('gs_curr_' + prog, JSON.stringify(payload));
+    } catch(err) {}
+
+    try {
+      const adminId = (currentUser?.data?.id && typeof currentUser.data.id === 'string' && currentUser.data.id.length >= 32) ? currentUser.data.id : null;
+      await supabase.from('gs_about_content').upsert({
+        section_key: 'curriculum_' + prog.toLowerCase().replace(/[^a-z0-9]/g, '_'),
+        content_text: JSON.stringify(payload),
+        updated_at: new Date().toISOString(),
+        updated_by: adminId
+      }, { onConflict: 'section_key' });
+    } catch(e) {}
+
+    showAboutToast(`✓ Curriculum updates for "${prog}" saved successfully!`);
+  });
+}
+
+// Initial boot load for Logo & Curriculum
 loadCustomLogo();
 updateLogoVisibility();
+window.loadManagerCurriculum();
+
 

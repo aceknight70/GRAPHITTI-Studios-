@@ -71,7 +71,7 @@
     <div class="flex flex-col items-center cursor-pointer mt-2 max-w-4xl" id="nav-home-btn">
       <div class="mb-4 relative group" id="header-logo-container">
          <img id="main-header-logo" src="/Screenshot_20260908_102638_WhatsApp.jpg" onerror="this.src='https://placehold.co/400x400/FDD835/000000?text=Graphitti+Studios'" alt="Graphitti Studios Logo" class="h-32 md:h-40 object-cover rounded-xl drop-shadow-md shadow-lg border-4 border-white transition-transform group-hover:scale-[1.01]" style="object-position: center; object-fit: cover; aspect-ratio: 1;">
-         <button id="btn-change-logo" onclick="event.stopPropagation(); window.openLogoModal()" class="hidden absolute bottom-2 right-2 bg-gray-900/90 hover:bg-black text-gsGold text-[11px] font-bold uppercase py-1 px-2.5 rounded shadow-lg border border-gsGold/60 flex items-center gap-1.5 transition">
+         <button id="btn-change-logo" onclick="event.stopPropagation(); window.openLogoModal()" class="absolute bottom-2 right-2 bg-gray-900/90 hover:bg-black text-gsGold text-[11px] font-bold uppercase py-1 px-2.5 rounded shadow-lg border border-gsGold/60 flex items-center gap-1.5 transition opacity-90 hover:opacity-100 group-hover:scale-105 cursor-pointer" title="Update Studio Logo (Staff, Manager, Master Admin)">
            <span>📷</span> <span class="hidden sm:inline">Change Logo</span>
          </button>
       </div>
@@ -883,21 +883,30 @@
       </div>
     </div>
 
-    <!-- MODAL: CHANGE LOGO (Gated to Master Admin & Manager) -->
+    <!-- MODAL: CHANGE LOGO (Staff, Manager & Master Admin) -->
     <div id="modal-change-logo" class="hidden fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 transition-opacity">
       <div class="card border-t-4 border-gsGold w-full max-w-md relative shadow-2xl">
         <button type="button" onclick="window.closeLogoModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 text-3xl leading-none font-light">&times;</button>
-        <div class="flex items-center gap-2 mb-2">
+        <div class="flex items-center gap-2 mb-1">
           <span class="text-xl">📷</span>
           <h2 class="text-2xl font-display uppercase tracking-tight text-gray-900">Update Studio Logo</h2>
         </div>
-        <p class="text-xs text-gray-500 mb-4">Gated to Master Admin & Manager. Upload an image from your device or paste a web URL.</p>
+        <p class="text-xs text-gray-500 mb-3">Authorized for <strong class="text-gray-700">Staff</strong> (PIN: 5555), <strong class="text-gray-700">Manager</strong> (PIN: 4321), and <strong class="text-gray-700">Master Admin</strong> (PIN: 1234).</p>
+
+        <!-- Dynamic Auth Status Banner -->
+        <div id="logo-auth-status" class="text-xs p-2.5 rounded mb-3 flex items-center justify-between transition-colors bg-gray-100 text-gray-700 border border-gray-200">
+          <span>Checking authorization...</span>
+        </div>
 
         <form id="logo-upload-form" class="space-y-4">
-          <!-- File upload input -->
+          <!-- Option 1: File upload with auto-compression -->
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">Option 1: Upload Image File</label>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-xs font-bold uppercase tracking-wider text-gray-700">Option 1: Upload Image File</label>
+              <span id="logo-compress-status" class="text-[10px] font-bold text-green-700 hidden">✓ Auto-Optimized</span>
+            </div>
             <input type="file" id="logo-file-input" accept="image/*" class="w-full text-xs text-gray-600 file:mr-3 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-bold file:uppercase file:bg-orange-100 file:text-gsBrown hover:file:bg-orange-200 cursor-pointer border p-2 rounded bg-gray-50">
+            <p class="text-[10px] text-gray-400 mt-1">Accepts any photo (JPG, PNG, WebP). Automatically resized & compressed for fast saving.</p>
           </div>
 
           <!-- Divider -->
@@ -907,18 +916,28 @@
             <hr class="flex-grow border-gray-200">
           </div>
 
-          <!-- URL input -->
+          <!-- Option 2: Image Web URL -->
           <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">Option 2: Image Web URL</label>
-            <input type="text" id="logo-url-input" class="input-field text-xs" placeholder="https://example.com/logo.jpg">
+            <input type="text" id="logo-url-input" class="input-field text-xs py-2" placeholder="https://example.com/logo.jpg">
+          </div>
+
+          <!-- Option 3: Presets -->
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1.5">Option 3: Quick Presets</label>
+            <div class="flex flex-wrap gap-2 text-[11px]">
+              <button type="button" onclick="window.setLogoPreset('/Screenshot_20260908_102638_WhatsApp.jpg')" class="px-2.5 py-1 rounded bg-amber-50 hover:bg-amber-100 text-gsBrown border border-amber-200 font-medium">WhatsApp Emblem</button>
+              <button type="button" onclick="window.setLogoPreset('https://placehold.co/400x400/FDD835/000000?text=Graphitti+Studios')" class="px-2.5 py-1 rounded bg-yellow-50 hover:bg-yellow-100 text-yellow-800 border border-yellow-200 font-medium">Warm Gold Badge</button>
+              <button type="button" onclick="window.setLogoPreset('https://placehold.co/400x400/8C3B14/FFFFFF?text=Graphitti+Creative')" class="px-2.5 py-1 rounded bg-orange-50 hover:bg-orange-100 text-orange-900 border border-orange-200 font-medium">Terracotta Emblem</button>
+            </div>
           </div>
 
           <!-- Preview box -->
           <div class="p-3 bg-gray-50 rounded border flex items-center gap-4">
-            <img id="logo-modal-preview" src="/Screenshot_20260908_102638_WhatsApp.jpg" alt="Preview" class="w-16 h-16 rounded-lg object-cover border-2 border-gsGold shadow-sm bg-white" onerror="this.src='https://placehold.co/400x400/FDD835/000000?text=Logo'">
+            <img id="logo-modal-preview" src="/Screenshot_20260908_102638_WhatsApp.jpg" alt="Preview" class="w-16 h-16 rounded-lg object-cover border-2 border-gsGold shadow-sm bg-white flex-shrink-0" onerror="this.src='https://placehold.co/400x400/FDD835/000000?text=Logo'">
             <div class="text-xs text-gray-500 leading-tight">
               <span class="font-bold text-gray-800 block mb-0.5">Live Header Preview</span>
-              The header emblem will update instantly across the entire application upon saving.
+              The header emblem will update instantly across the entire application and synchronize to persistent storage.
             </div>
           </div>
 
@@ -928,7 +947,7 @@
             <button type="button" onclick="window.resetDefaultLogo()" class="text-xs text-gray-500 hover:text-red-600 font-bold uppercase">Reset Default</button>
             <div class="flex gap-2">
               <button type="button" onclick="window.closeLogoModal()" class="px-3.5 py-1.5 border rounded text-xs font-bold uppercase text-gray-600 hover:bg-gray-100">Cancel</button>
-              <button type="submit" class="btn-primary text-xs py-1.5 px-4 shadow">Save Logo</button>
+              <button type="submit" id="btn-save-logo" class="btn-primary text-xs py-1.5 px-4 shadow">Save Logo</button>
             </div>
           </div>
         </form>
@@ -1152,11 +1171,14 @@
 
     <!-- ROOM: ADMIN - STAFF DASHBOARD -->
     <div id="room-admin-staff" class="room space-y-8">
-       <div class="flex justify-between items-end border-b pb-4">
+       <div class="flex flex-col sm:flex-row justify-between sm:items-end border-b pb-4 gap-3">
           <div>
              <h2 class="text-3xl font-display uppercase">Staff Operations Dashboard</h2>
-             <p class="text-gray-500 font-medium">Day-to-day operations and approvals</p>
+             <p class="text-gray-500 font-medium">Day-to-day operations, branding & approvals (Staff PIN: 5555)</p>
           </div>
+          <button onclick="window.openLogoModal()" class="btn-primary text-xs py-2 px-4 flex items-center justify-center gap-2 self-start sm:self-auto bg-gray-900 hover:bg-black">
+            <span>📷</span> Update Studio Logo
+          </button>
        </div>
        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="card">
@@ -1186,41 +1208,57 @@
              </ul>
           </div>
        </div>
+
+       <!-- Staff Branding & Identity Card -->
+       <div class="card bg-orange-50/60 border-l-4 border-gsGold flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+             <h4 class="font-bold uppercase text-gray-900 flex items-center gap-2">
+                <span>🎨</span> Studio Branding & Visual Identity
+             </h4>
+             <p class="text-xs text-gray-600 mt-1">Staff members have full operational permission to update the header emblem, upload new studio photos, or select from official Graphitti branding assets.</p>
+          </div>
+          <button onclick="window.openLogoModal()" class="btn-primary text-xs py-2 px-4 whitespace-nowrap bg-gsBrown hover:bg-orange-800">
+             📷 Open Logo Manager
+          </button>
+       </div>
     </div>
 
     <!-- ROOM: ADMIN - MANAGER DASHBOARD -->
     <div id="room-admin-manager" class="room space-y-8">
-       <div class="flex justify-between items-end border-b pb-4">
+       <div class="flex flex-col sm:flex-row justify-between sm:items-end border-b pb-4 gap-3">
           <div>
              <h2 class="text-3xl font-display uppercase">Curriculum Manager</h2>
-             <p class="text-gray-500 font-medium">Programme content and structure editing</p>
+             <p class="text-gray-500 font-medium">Programme content and structure editing (Barbara Abieyuwa Omoregie · PIN: 4321)</p>
           </div>
+          <button onclick="window.openLogoModal()" class="btn-primary text-xs py-2 px-4 flex items-center justify-center gap-2 self-start sm:self-auto bg-gray-900 hover:bg-black">
+            <span>📷</span> Update Studio Logo
+          </button>
        </div>
        <div class="card bg-gray-50 border-l-4 border-gsBrown">
            <h3 class="font-bold uppercase mb-4 text-gsBrown">Programme Editor</h3>
-           <select class="input-field mb-6 font-bold">
-              <option>Shadow SDG Entrepreneurship</option>
-              <option>Commercial Creative</option>
-              <option>Digital & Tech-Creative</option>
-              <option>Cultural & Heritage</option>
-              <option>Freelance / Portfolio</option>
+           <select id="mgr-prog-select" class="input-field mb-6 font-bold" onchange="window.loadManagerCurriculum()">
+              <option value="Shadow SDG Entrepreneurship">Shadow SDG Entrepreneurship</option>
+              <option value="Commercial Creative">Commercial Creative</option>
+              <option value="Digital & Tech-Creative">Digital & Tech-Creative</option>
+              <option value="Cultural & Heritage">Cultural & Heritage</option>
+              <option value="Freelance / Portfolio">Freelance / Portfolio</option>
            </select>
            
-           <div class="space-y-6">
+           <form id="form-mgr-curriculum" class="space-y-6">
               <div>
                  <h4 class="font-bold text-sm text-gray-800 uppercase mb-2">Knowledge & Prep Module</h4>
-                 <textarea class="input-field h-24" placeholder="Enter curriculum topics, theory, and foundational concepts..."></textarea>
+                 <textarea id="mgr-curr-knowledge" class="input-field h-24" placeholder="Enter curriculum topics, theory, and foundational concepts..."></textarea>
               </div>
               <div>
                  <h4 class="font-bold text-sm text-gray-800 uppercase mb-2">Production Module</h4>
-                 <textarea class="input-field h-24" placeholder="Enter practical steps, tool usage, and physical creation process..."></textarea>
+                 <textarea id="mgr-curr-production" class="input-field h-24" placeholder="Enter practical steps, tool usage, and physical creation process..."></textarea>
               </div>
               <div>
                  <h4 class="font-bold text-sm text-gray-800 uppercase mb-2">Market Exposure Module</h4>
-                 <textarea class="input-field h-24" placeholder="Enter packaging, pricing, pitching, and sales strategy..."></textarea>
+                 <textarea id="mgr-curr-market" class="input-field h-24" placeholder="Enter packaging, pricing, pitching, and sales strategy..."></textarea>
               </div>
-              <button class="btn-primary w-full text-xs uppercase bg-gsBrown hover:bg-orange-800">Save Curriculum Updates</button>
-           </div>
+              <button type="submit" id="btn-save-curriculum" class="btn-primary w-full text-xs uppercase bg-gsBrown hover:bg-orange-800">Save Curriculum Updates</button>
+           </form>
        </div>
     </div>
 
