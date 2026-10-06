@@ -1,8 +1,7 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY, checkSupabaseConnection } from './lib/supabase.js';
 
-const SUPABASE_URL = window.ENV?.SUPABASE_URL || '';
-const SUPABASE_ANON_KEY = window.ENV?.SUPABASE_ANON_KEY || '';
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Verify Supabase connection on boot and log detailed diagnostics
+checkSupabaseConnection();
 
 let currentUser = null; 
 // roles: student, parent, trainee, teacher, admin, connector
