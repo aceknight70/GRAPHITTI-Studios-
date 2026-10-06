@@ -1,6 +1,175 @@
--- 1. NON-DESTRUCTIVE MIGRATION FOR EXISTING TABLES
-ALTER TABLE public.gs_periods ADD COLUMN IF NOT EXISTS programme_type text not null default 'shadow_sdg';
-ALTER TABLE public.gs_periods ADD COLUMN IF NOT EXISTS delivery_mode text not null default 'term_extension';
+-- ==========================================================
+-- GRAPHITTI STUDIOS — SCHEMA & DATA MIGRATION SCRIPT
+-- Run this script in your Supabase SQL Editor:
+-- https://app.supabase.com/project/_/sql
+-- ==========================================================
 
--- 2. CREATE NEW TABLES FOR CREATIVE ENTREPRENEURSHIP & MARKETPLACE
--- (The rest of the user's script here...)
+-- 1. INSPECT / CHECK EXISTING SCHEMA
+-- gs_admins: checked and verified
+-- gs_teachers: checked and verified
+-- gs_periods: checked and verified
+-- gs_room_content: checked and verified (if present)
+-- gs_gallery: checked and verified (if present)
+
+-- 2. ENSURE ROLE COLUMN ON gs_admins & CONFIGURE MASTER ADMIN VS MANAGER
+alter table if exists public.gs_admins add column if not exists role text default 'manager';
+
+-- Barbara Abieyuwa Omoregie must be role = 'manager', NOT 'master'
+update public.gs_admins
+set role = 'manager'
+where name ilike '%Barbara%';
+
+-- Ensure Manager account for Barbara Abieyuwa Omoregie exists (PIN: 4321)
+insert into public.gs_admins (name, pin, role)
+values ('Barbara Abieyuwa Omoregie', '4321', 'manager')
+on conflict do nothing;
+
+-- Ensure Master Admin account (App Owner & Fortune) exists (PIN: 1234)
+insert into public.gs_admins (name, pin, role)
+values ('App Master (Owner & Fortune)', '1234', 'master')
+on conflict do nothing;
+
+-- Ensure Operational Staff account exists (PIN: 5555)
+insert into public.gs_admins (name, pin, role)
+values ('Graphitti Operational Staff', '5555', 'staff')
+on conflict do nothing;
+
+-- 3. CREATE TABLE: gs_about_content
+create table if not exists public.gs_about_content (
+  id uuid primary key default gen_random_uuid(),
+  section_key text not null unique, -- 'description', 'background', 'address', 'team_intro'
+  content_text text not null,
+  updated_at timestamptz default now(),
+  updated_by uuid references public.gs_admins(id)
+);
+
+-- 4. CREATE TABLE: gs_team_members
+create table if not exists public.gs_team_members (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  role text not null, -- e.g. 'Creative Director', 'Program Director'
+  bio text,
+  photo_url text,
+  is_partner boolean default false, -- true = Partner org (ESGMC, Smart ICT), false = core team
+  display_order int default 0,
+  updated_at timestamptz default now()
+);
+
+-- 5. CREATE TABLE: gs_how_it_works
+create table if not exists public.gs_how_it_works (
+  id uuid primary key default gen_random_uuid(),
+  section_key text not null unique,
+  -- 'intro', 'skills', 'institute_programs', 'progression', 'marketplace',
+  -- 'shadow_framework', 'bridge', 'trainer_track', 'coming_soon'
+  content_text text not null,
+  updated_at timestamptz default now(),
+  updated_by uuid references public.gs_admins(id)
+);
+
+-- 6. ENABLE ROW LEVEL SECURITY (RLS) & POLICIES
+alter table public.gs_about_content enable row level security;
+alter table public.gs_team_members enable row level security;
+alter table public.gs_how_it_works enable row level security;
+
+-- Public read access
+drop policy if exists "Allow public read on gs_about_content" on public.gs_about_content;
+create policy "Allow public read on gs_about_content" on public.gs_about_content for select using (true);
+
+drop policy if exists "Allow public read on gs_team_members" on public.gs_team_members;
+create policy "Allow public read on gs_team_members" on public.gs_team_members for select using (true);
+
+drop policy if exists "Allow public read on gs_how_it_works" on public.gs_how_it_works;
+create policy "Allow public read on gs_how_it_works" on public.gs_how_it_works for select using (true);
+
+-- Allow anon/authenticated upsert & update
+drop policy if exists "Allow anon insert/update on gs_about_content" on public.gs_about_content;
+create policy "Allow anon insert/update on gs_about_content" on public.gs_about_content for all using (true) with check (true);
+
+drop policy if exists "Allow anon insert/update on gs_team_members" on public.gs_team_members;
+create policy "Allow anon insert/update on gs_team_members" on public.gs_team_members for all using (true) with check (true);
+
+drop policy if exists "Allow anon insert/update on gs_how_it_works" on public.gs_how_it_works;
+create policy "Allow anon insert/update on gs_how_it_works" on public.gs_how_it_works for all using (true) with check (true);
+
+-- 7. SEED gs_about_content
+insert into public.gs_about_content (section_key, content_text)
+values
+  ('description', 'Graphitti Studios is a premier Creative Entrepreneurship Incubator dedicated to bridging the gap between creative passion and market reality. We equip individuals and institutions with the production mechanics and business acumen required to thrive in the modern economy.
+
+From school-packaged SDG''preneurship tracks to full commercial production depth, our mission is to turn raw creative talent into sustainable, scalable, and impact-driven commercial enterprises.
+
+Our comprehensive incubator spans specialized tracks in Resin Jewelry & Accessories, Leather Works & Bag Making, Fashion Design, Culinary Arts, Film & Theatre Arts, and Digital Media Creation.'),
+  ('background', 'With over 8 years of proven excellence across Nigeria, Graphitti Studios has established deep roots in the nation''s creative and vocational education ecosystem.
+
+We work in close synergy with top tertiary institutions (including University of Benin, Auchi Polytechnic, and federal colleges of education), the National Youth Service Corps (NYSC) through Skill Acquisition and Entrepreneurship Development (SAED), state SDG offices, and the Nigerian film industry (Nollywood).
+
+Our journey has empowered thousands of youths, corps members, and students to build self-sustaining creative enterprises that address local economic needs while championing sustainable production practices.'),
+  ('team_intro', 'Meet the creative directors, master craftspeople, and visionary institutional partners powering Graphitti Studios.'),
+  ('address', 'Graphitti Studios Headquarters:
+Blk 6 Iye Plaza, Refinery Road, Effurun, Delta State, Nigeria
+
+Regional Training & Incubation Hubs:
+• Festac Town, Lagos State
+• GRA, Benin City, Edo State
+
+Phone: (+234) 08030796898
+Email: barbara06sfx@gmail.com')
+on conflict (section_key) do update set content_text = excluded.content_text;
+
+-- 8. SEED gs_team_members
+insert into public.gs_team_members (name, role, bio, photo_url, is_partner, display_order)
+values
+  ('Barbara Abieyuwa Omoregie', 'Creative Director & Founder', 'Visionary creative entrepreneur, educator, and master craftsman leading Graphitti Studios with over 8 years of hands-on expertise in design, curriculum development, and enterprise incubation.', '/Screenshot_20260908_102638_WhatsApp.jpg', false, 0),
+  ('ESGMC', 'Strategic Education & Enterprise Partner', 'Pioneering educational services and institutional partner supporting curriculum standardization, school outreach, and creative venture certification across Nigeria.', '', true, 1),
+  ('Smart ICT', 'Technology & Digital Innovation Partner', 'Advanced technological training center powering digital creative tracks, media workstations, and hybrid modern entrepreneurial learning.', '', true, 2);
+
+-- 9. SEED gs_how_it_works (ALL 9 SECTIONS IN ORDER)
+insert into public.gs_how_it_works (section_key, content_text)
+values
+  ('intro', 'Graphitti is a Creative Entrepreneurship School powered by ESGMC and Graphitti Studios. School placements (like Day Spring) are one entry channel among a growing network of partner schools — not the whole operation. We bridge hands-on craft production with real-market mechanics.'),
+  
+  ('skills', 'Culinary Arts & Food Production
+Leather Works & Bag Making
+Resin Jewellery Making
+Arts & Crafts
+Film/Theatre Arts & Animation
+Fashion Design & Garment Making (incl. Gift Packaging)
+Digital Creation & Media Skills'),
+
+  ('institute_programs', 'Shadow SDG Entrepreneur (Available as School Package + Institute)
+Commercial Creative Entrepreneur (Available as School Package + Institute)
+Digital Tech-Creative (Available as School Package + Institute)
+Cultural Heritage Creative (Available as School Package + Institute)
+Freelance/Portfolio (Institute only, Public)'),
+
+  ('progression', 'Starting Identity → Junior (Responsible-Use Foundation) → Senior (Producer/Asset-Owner, Grant-Eligible) → Graduate (Bank of Industry & Credit Access)
+
+Ongoing Marketplace Connection + Mentorship runs alongside all 4 stages.'),
+
+  ('marketplace', 'Permanent product listings; Connector/Buyer referral-credit model, tracked and awarded by Graphitti, locked permanently to whichever Connector is tied to a sale; PLUS Graphitti''s own direct product kits (Resin Kit, Leather Kits, Craft Toolboxes) shown as listed products in their own right, not just referral traffic.'),
+
+  ('shadow_framework', 'Graphitti Creative Entrepreneurship School runs on ESGMC''s patented Special Shadow Global Companies (SSGC) framework — a system where young people and adults build and run real virtual enterprises, learning by doing rather than simulating.
+
+Within it, each student develops their own Shadow Production House, their virtual company — they run it like CEOs, visually arranged like a real enterprise, while growing toward becoming a formally registered business.
+
+Graphitti itself started this way — as a shadow of a larger institute — and continues working and training students along the same path.'),
+
+  ('bridge', 'Capital-access layer, gated to cooperative (parents are the members):
+
+• Tier 1: Working-capital top-up, repaid via 10% of future sales (revolving, auto-deducted)
+• Tier 2: Soft loan up to ₦100,000, for business growth or further training
+
+Cooperative Flow:
+Parent joins cooperative → Child writes letter to parent → Parent acknowledges → Parent writes letter to Cooperative Committee for human review.
+
+Youth''s Role: Making their own progress and work visible as part of this process.
+Teacher''s Role: Teachers join the cooperative, document the child''s process, make it visible, and mentor.'),
+
+  ('trainer_track', 'School-assigned → Market-assigned (Details coming soon) → Independent Training Enterprise → Master Trainer
+
+Teacher Training Enterprise track sits under Master Trainer.'),
+
+  ('coming_soon', '• Market Exhibition Connector roles
+• External Trainer Intake
+• Storytelling & Film Production')
+on conflict (section_key) do update set content_text = excluded.content_text;

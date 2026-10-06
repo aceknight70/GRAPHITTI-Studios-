@@ -69,8 +69,11 @@
     </div>
     
     <div class="flex flex-col items-center cursor-pointer mt-2 max-w-4xl" id="nav-home-btn">
-      <div class="mb-4">
-         <img src="/Screenshot_20260908_102638_WhatsApp.jpg" onerror="this.src='https://placehold.co/400x400/FDD835/000000?text=Graphitti+Studios'" alt="Graphitti Studios Logo" class="h-32 md:h-40 object-cover rounded-xl drop-shadow-md shadow-lg border-4 border-white" style="object-position: center; object-fit: cover; aspect-ratio: 1;">
+      <div class="mb-4 relative group" id="header-logo-container">
+         <img id="main-header-logo" src="/Screenshot_20260908_102638_WhatsApp.jpg" onerror="this.src='https://placehold.co/400x400/FDD835/000000?text=Graphitti+Studios'" alt="Graphitti Studios Logo" class="h-32 md:h-40 object-cover rounded-xl drop-shadow-md shadow-lg border-4 border-white transition-transform group-hover:scale-[1.01]" style="object-position: center; object-fit: cover; aspect-ratio: 1;">
+         <button id="btn-change-logo" onclick="event.stopPropagation(); window.openLogoModal()" class="hidden absolute bottom-2 right-2 bg-gray-900/90 hover:bg-black text-gsGold text-[11px] font-bold uppercase py-1 px-2.5 rounded shadow-lg border border-gsGold/60 flex items-center gap-1.5 transition">
+           <span>📷</span> <span class="hidden sm:inline">Change Logo</span>
+         </button>
       </div>
       <h1 class="wordmark text-4xl md:text-6xl uppercase tracking-tighter text-white mb-2 drop-shadow-sm">GRAPHITTI STUDIOS</h1>
       <p class="text-lg md:text-xl text-orange-100 font-medium tracking-wide uppercase font-display">Creative Entrepreneurship Incubator</p>
@@ -86,6 +89,7 @@
     <div class="max-w-5xl mx-auto px-4 flex justify-start md:justify-center gap-6 overflow-x-auto py-3 text-sm font-bold uppercase text-gray-600 scrollbar-hide">
       <button onclick="showRoom('room-landing')" class="hover:text-gsGold whitespace-nowrap">Home</button>
       <button onclick="showRoom('room-about')" class="hover:text-gsGold whitespace-nowrap">About</button>
+      <button onclick="showRoom('room-how-it-works')" class="hover:text-gsGold whitespace-nowrap">How It Works</button>
       <button onclick="showRoom('room-programs')" class="hover:text-gsGold whitespace-nowrap">Programs</button>
       <button onclick="showRoom('room-gallery')" class="hover:text-gsGold whitespace-nowrap">Gallery</button>
       <button onclick="showRoom('room-events')" class="hover:text-gsGold whitespace-nowrap">Events</button>
@@ -112,24 +116,142 @@
       </div>
     </div>
 
-    <!-- ROOM: ABOUT US & LOCATION -->
-    <div id="room-about" class="room space-y-12">
-       <div class="text-center max-w-3xl mx-auto mt-8">
-         <h2 class="text-4xl font-display uppercase tracking-tight mb-4">About Us</h2>
-         <p class="text-gray-600 leading-relaxed text-lg">Graphitti Studios is a premier Creative Entrepreneurship Incubator. We bridge the gap between creative passion and market reality, equipping individuals and institutions with the production mechanics and business acumen required to thrive in the modern economy.</p>
+    <!-- ROOM: ABOUT GRAPHITTI -->
+    <div id="room-about" class="room space-y-10">
+       <!-- Top Section Header with Brand System -->
+       <div class="text-center max-w-3xl mx-auto mt-6">
+         <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-100 text-gsBrown text-xs font-bold uppercase tracking-widest mb-3 border border-orange-200">
+           <span class="text-sm">🖐️</span> Graphitti Brand & Incubator
+         </div>
+         <h2 class="text-4xl md:text-5xl font-display uppercase tracking-tight text-gray-900 mb-2">About Graphitti Studios</h2>
+         <p class="text-gsBrown font-bold text-sm md:text-base uppercase tracking-wider font-display">Where Creativity Meets Industry</p>
        </div>
-       <div class="card max-w-3xl mx-auto border-t-4 border-gsBrown bg-orange-50 text-center">
-         <h3 class="text-2xl font-display uppercase mb-4 text-gsBrown">Address & Location</h3>
-         <p class="font-bold text-lg mb-1">Graphitti Studios Headquarters</p>
-         <p class="text-gray-700">Blk 6 Iye Plaza, Refinery Road</p>
-         <p class="text-gray-700">Effurun, Delta State, Nigeria</p>
-         <div class="mt-4 flex flex-col items-center justify-center space-y-1 text-gray-700 font-medium">
-            <p>📞 (+234) 08030796898</p>
-            <p>✉️ barbara06sfx@gmail.com</p>
+
+       <!-- Master Admin / Manager Privileges Banner -->
+       <div id="about-master-banner" class="hidden max-w-4xl mx-auto bg-amber-50 border-2 border-gsGold rounded-lg p-4 text-amber-950 text-sm shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+         <div class="flex items-center gap-3">
+           <span class="text-2xl">👑</span>
+           <div>
+             <div class="font-bold uppercase tracking-wider text-xs text-gsBrown flex items-center gap-2">
+               <span id="about-role-badge-text">Master Admin Editorial Privileges Active</span>
+               <span class="bg-gsGold text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase">Live In-Place Editing</span>
+             </div>
+             <p class="text-xs text-amber-900 mt-0.5">Hover or tap the <span class="font-bold text-gsBrown">✏️ Edit</span> button on any text block or team card to update content directly.</p>
+           </div>
          </div>
-         <div class="mt-6 w-full h-64 bg-gray-200 rounded overflow-hidden shadow-inner">
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3971.05445214695!2d5.772590214765363!3d5.559288195968565!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1041ad7000000001%3A0x0!2sRefinery%20Rd%2C%20Effurun%2C%20Nigeria!5e0!3m2!1sen!2sng!4v1700000000000!5m2!1sen!2sng" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+         <button onclick="showRoom('room-admin')" class="btn-secondary text-xs py-1.5 px-3 border-gsGold text-gsBrown hover:bg-orange-100 whitespace-nowrap">Dashboard →</button>
+       </div>
+
+       <!-- Notification Toast -->
+       <div id="about-toast" class="hidden fixed bottom-6 right-6 z-50 bg-gray-900 text-white px-5 py-3 rounded-lg shadow-xl text-sm font-medium border border-gray-700 flex items-center gap-3 transition-all duration-300">
+         <span id="about-toast-icon">✨</span>
+         <span id="about-toast-text">Changes saved!</span>
+       </div>
+
+       <!-- 1. Description Section -->
+       <div id="about-desc-card" class="card max-w-4xl mx-auto border-t-4 border-gsGold relative transition-all duration-200">
+         <!-- Populated via renderAboutRoom() -->
+       </div>
+
+       <!-- 2. Background Section -->
+       <div id="about-bg-card" class="card max-w-4xl mx-auto border-t-4 border-gsBrown relative transition-all duration-200">
+         <!-- Populated via renderAboutRoom() -->
+       </div>
+
+       <!-- 3. Our Team & Partners -->
+       <div id="about-team-section" class="max-w-5xl mx-auto space-y-6">
+         <div class="flex flex-col sm:flex-row sm:items-end justify-between border-b pb-4 gap-2 relative">
+           <div>
+             <div class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-gsGold mb-1">
+               <span>👥</span> Leadership & Institutional Network
+             </div>
+             <h3 class="text-3xl font-display uppercase tracking-tight text-gray-900">Our Team & Partners</h3>
+             <div id="about-team-intro-display" class="text-gray-600 text-sm mt-1"></div>
+           </div>
+           <div id="about-team-intro-action" class="relative"></div>
          </div>
+
+         <!-- Team & Partners Card Grid -->
+         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="about-team-grid">
+           <!-- Populated by renderAboutRoom() -->
+         </div>
+       </div>
+
+       <!-- 4. Address & Location Section -->
+       <div id="about-address-card" class="card max-w-4xl mx-auto border-t-4 border-gsRed relative transition-all duration-200">
+         <!-- Populated via renderAboutRoom() -->
+       </div>
+    </div>
+
+    <!-- ROOM: HOW GRAPHITTI WORKS -->
+    <div id="room-how-it-works" class="room space-y-12">
+       <!-- Top Section Header -->
+       <div class="text-center max-w-3xl mx-auto mt-6">
+         <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-100 text-gsBrown text-xs font-bold uppercase tracking-widest mb-3 border border-orange-200">
+           <span class="text-sm">🖐️</span> ESGMC Patented SSGC Framework
+         </div>
+         <h2 class="text-4xl md:text-5xl font-display uppercase tracking-tight text-gray-900 mb-2">How Graphitti Works</h2>
+         <p class="text-gsBrown font-bold text-sm md:text-base uppercase tracking-wider font-display">From Shadow School to Full Commercial Production Depth</p>
+       </div>
+
+       <!-- Master Admin / Manager Privileges Banner -->
+       <div id="how-master-banner" class="hidden max-w-4xl mx-auto bg-amber-50 border-2 border-gsGold rounded-lg p-4 text-amber-950 text-sm shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+         <div class="flex items-center gap-3">
+           <span class="text-2xl">👑</span>
+           <div>
+             <div class="font-bold uppercase tracking-wider text-xs text-gsBrown flex items-center gap-2">
+               <span id="how-role-badge-text">Master Admin Editorial Privileges Active</span>
+               <span class="bg-gsGold text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase">Live In-Place Editing</span>
+             </div>
+             <p class="text-xs text-amber-900 mt-0.5">Click the <span class="font-bold text-gsBrown">✏️ Edit</span> button on any of the 9 operational sections below to update content in-place.</p>
+           </div>
+         </div>
+         <button onclick="showRoom('room-admin')" class="btn-secondary text-xs py-1.5 px-3 border-gsGold text-gsBrown hover:bg-orange-100 whitespace-nowrap">Dashboard →</button>
+       </div>
+
+       <!-- 1. INTRO SECTION -->
+       <div id="how-intro-card" class="card max-w-4xl mx-auto border-t-4 border-gsGold relative transition-all duration-200">
+         <!-- Populated via renderHowItWorksRoom() -->
+       </div>
+
+       <!-- 2. SEVEN INDUSTRY SKILLS -->
+       <div id="how-skills-card" class="card max-w-5xl mx-auto border-t-4 border-gsBrown relative transition-all duration-200">
+         <!-- Populated via renderHowItWorksRoom() -->
+       </div>
+
+       <!-- 3. GRAPHITTI INSTITUTE PROGRAMS -->
+       <div id="how-institute-card" class="card max-w-5xl mx-auto border-t-4 border-gsBlue relative transition-all duration-200">
+         <!-- Populated via renderHowItWorksRoom() -->
+       </div>
+
+       <!-- 4. IDENTITY PROGRESSION (School Package Specifically) -->
+       <div id="how-progression-card" class="card max-w-5xl mx-auto border-t-4 border-gsGreen relative transition-all duration-200">
+         <!-- Populated via renderHowItWorksRoom() -->
+       </div>
+
+       <!-- 5. MARKETPLACE & DIRECT KITS -->
+       <div id="how-marketplace-card" class="card max-w-5xl mx-auto border-t-4 border-gsGold relative transition-all duration-200">
+         <!-- Populated via renderHowItWorksRoom() -->
+       </div>
+
+       <!-- 6. SHADOW ENTREPRENEURSHIP FRAMEWORK (SSGC Patented) -->
+       <div id="how-shadow-card" class="card max-w-4xl mx-auto border-t-4 border-gray-900 bg-gradient-to-br from-white via-amber-50/20 to-orange-50/30 relative transition-all duration-200 shadow-md">
+         <!-- Populated via renderHowItWorksRoom() -->
+       </div>
+
+       <!-- 7. GRAPHITTI BRIDGE (Capital Access Layer & Cooperative) -->
+       <div id="how-bridge-card" class="card max-w-5xl mx-auto border-t-4 border-gsRed relative transition-all duration-200">
+         <!-- Populated via renderHowItWorksRoom() -->
+       </div>
+
+       <!-- 8. TRAINER TRACK (Career Pathway) -->
+       <div id="how-trainer-card" class="card max-w-5xl mx-auto border-t-4 border-gsBrown relative transition-all duration-200">
+         <!-- Populated via renderHowItWorksRoom() -->
+       </div>
+
+       <!-- 9. COMING SOON -->
+       <div id="how-coming-soon-card" class="max-w-4xl mx-auto border-2 border-dashed border-gray-300 bg-gray-50/80 rounded-lg p-6 relative transition-all duration-200">
+         <!-- Populated via renderHowItWorksRoom() -->
        </div>
     </div>
 
@@ -715,33 +837,100 @@
       </div>
     </div>
 
-    <!-- ROOM: LOGIN -->
-    <div id="room-login" class="room max-w-md mx-auto">
-      <div class="card border-t-4 border-gray-800">
-        <h2 class="text-2xl font-display uppercase mb-6 text-center">Portal Login</h2>
+    <!-- MODAL: LOGIN -->
+    <div id="modal-login" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 transition-opacity">
+      <div class="card border-t-4 border-gsGold w-full max-w-md relative shadow-2xl">
+        <button type="button" onclick="window.closeLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 text-3xl leading-none font-light">&times;</button>
+        
+        <div class="flex items-center justify-center gap-2 mb-2">
+          <span class="text-xl">🖐️</span>
+          <h2 class="text-2xl font-display uppercase tracking-tight text-center">Portal Teleprompter Login</h2>
+        </div>
+
+        <!-- Teleprompter Live Stream Ticker -->
+        <div class="teleprompter-container bg-gray-900 text-gsGold text-[11px] font-bold uppercase py-2 px-3 rounded mb-5 shadow-inner flex items-center overflow-hidden border border-gsGold/30">
+          <span class="mr-2 text-xs flex-shrink-0 text-white font-mono">⚡ TELEPROMPT:</span>
+          <div class="teleprompter-text">
+            <span>GRAPHITTI STUDIOS PORTAL ACCREDITATION · MASTER ADMIN PIN: 1234 · MANAGER PIN: 4321 · STAFF PIN: 5555 · DIRECT INCUBATOR ACCESS ·</span>
+          </div>
+        </div>
+
         <form id="login-form" class="space-y-4">
           <div>
             <label class="block text-sm font-bold mb-1">I am a...</label>
             <select id="login-role" class="input-field">
+              <option value="admin">Graphitti Master Admin (Owner & Fortune)</option>
+              <option value="manager">Graphitti Manager (Barbara Abieyuwa Omoregie)</option>
+              <option value="staff">Graphitti Staff (Operations)</option>
               <option value="student">School Student</option>
               <option value="parent">Parent / Guardian</option>
               <option value="trainee">Institute Trainee</option>
               <option value="teacher">School Teacher / Mentor</option>
-              <option value="staff">Graphitti Staff (Operations)</option>
-              <option value="manager">Graphitti Manager (Curriculum)</option>
-              <option value="admin">Graphitti Master (Overview)</option>
             </select>
           </div>
-          <div id="login-phone-div">
+          <div id="login-phone-div" class="hidden">
             <label class="block text-sm font-bold mb-1" id="login-phone-label">Registered Phone</label>
             <input type="text" id="login-phone" class="input-field" placeholder="080...">
           </div>
           <div>
             <label class="block text-sm font-bold mb-1">Secret PIN</label>
             <input type="password" id="login-pin" class="input-field" placeholder="****" required>
+            <p id="login-pin-hint" class="text-[11px] text-gray-500 mt-1">Master Admin PIN: <span class="font-mono font-bold text-gsBrown">1234</span> | Manager PIN: <span class="font-mono font-bold text-gsBrown">4321</span> | Staff PIN: <span class="font-mono font-bold text-gsBrown">5555</span></p>
           </div>
           <div id="login-error" class="text-red-500 text-sm hidden font-semibold"></div>
-          <button type="submit" class="btn-primary w-full bg-gray-800 hover:bg-black" id="login-submit-btn">Enter Portal</button>
+          <button type="submit" class="btn-primary w-full bg-gray-900 hover:bg-black" id="login-submit-btn">Teleprompt Portal</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL: CHANGE LOGO (Gated to Master Admin & Manager) -->
+    <div id="modal-change-logo" class="hidden fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 transition-opacity">
+      <div class="card border-t-4 border-gsGold w-full max-w-md relative shadow-2xl">
+        <button type="button" onclick="window.closeLogoModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 text-3xl leading-none font-light">&times;</button>
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xl">📷</span>
+          <h2 class="text-2xl font-display uppercase tracking-tight text-gray-900">Update Studio Logo</h2>
+        </div>
+        <p class="text-xs text-gray-500 mb-4">Gated to Master Admin & Manager. Upload an image from your device or paste a web URL.</p>
+
+        <form id="logo-upload-form" class="space-y-4">
+          <!-- File upload input -->
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">Option 1: Upload Image File</label>
+            <input type="file" id="logo-file-input" accept="image/*" class="w-full text-xs text-gray-600 file:mr-3 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-bold file:uppercase file:bg-orange-100 file:text-gsBrown hover:file:bg-orange-200 cursor-pointer border p-2 rounded bg-gray-50">
+          </div>
+
+          <!-- Divider -->
+          <div class="flex items-center gap-3">
+            <hr class="flex-grow border-gray-200">
+            <span class="text-[10px] uppercase font-bold text-gray-400">OR</span>
+            <hr class="flex-grow border-gray-200">
+          </div>
+
+          <!-- URL input -->
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">Option 2: Image Web URL</label>
+            <input type="text" id="logo-url-input" class="input-field text-xs" placeholder="https://example.com/logo.jpg">
+          </div>
+
+          <!-- Preview box -->
+          <div class="p-3 bg-gray-50 rounded border flex items-center gap-4">
+            <img id="logo-modal-preview" src="/Screenshot_20260908_102638_WhatsApp.jpg" alt="Preview" class="w-16 h-16 rounded-lg object-cover border-2 border-gsGold shadow-sm bg-white" onerror="this.src='https://placehold.co/400x400/FDD835/000000?text=Logo'">
+            <div class="text-xs text-gray-500 leading-tight">
+              <span class="font-bold text-gray-800 block mb-0.5">Live Header Preview</span>
+              The header emblem will update instantly across the entire application upon saving.
+            </div>
+          </div>
+
+          <div id="logo-modal-error" class="text-red-500 text-xs hidden font-bold"></div>
+
+          <div class="flex items-center justify-between pt-2 border-t">
+            <button type="button" onclick="window.resetDefaultLogo()" class="text-xs text-gray-500 hover:text-red-600 font-bold uppercase">Reset Default</button>
+            <div class="flex gap-2">
+              <button type="button" onclick="window.closeLogoModal()" class="px-3.5 py-1.5 border rounded text-xs font-bold uppercase text-gray-600 hover:bg-gray-100">Cancel</button>
+              <button type="submit" class="btn-primary text-xs py-1.5 px-4 shadow">Save Logo</button>
+            </div>
+          </div>
         </form>
       </div>
     </div>
@@ -936,11 +1125,12 @@
 
     <!-- ROOM: ADMIN DASHBOARD -->
     <div id="room-admin" class="room space-y-8">
-       <div class="flex justify-between items-end border-b pb-4">
+       <div class="flex flex-col sm:flex-row justify-between sm:items-end border-b pb-4 gap-3">
           <div>
              <h2 class="text-3xl font-display uppercase">Master Admin Dashboard</h2>
              <p id="admin-subtitle" class="text-gray-500 font-medium"></p>
           </div>
+          <button onclick="showRoom('room-about')" class="btn-primary text-xs py-2.5 px-4 flex items-center justify-center gap-2 self-start sm:self-auto"><span class="text-sm">✏️</span> Edit Public About Page</button>
        </div>
        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div class="card text-center"><p class="text-sm text-gray-500 uppercase font-bold">Total Schools</p><p id="a-stat-schools" class="text-4xl font-display mt-2">-</p></div>
